@@ -175,6 +175,12 @@ body::after {
   color: var(--ink-dim); letter-spacing: 0.3em; transition: color 0.2s;
 }
 .mm-link:hover { color: var(--moss); }
+.theme-toggle-mm {
+  background: none; border: 1px solid var(--muted-border);
+  padding: 0.6rem 1.2rem; touch-action: manipulation;
+  min-height: 44px; min-width: 80px;
+}
+html[data-theme="dark"] .theme-toggle-mm { border-color: var(--dark-muted); color: var(--snow-dim); }
 
 /* ─── Hero (深色保留) ─── */
 #hero {
@@ -805,9 +811,10 @@ body:has(#journal-hero) { background: #04060e; }
 /* ── Entry Grid ── */
 .entry-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-  gap: 2rem; max-width: 1260px; margin: 0 auto;
+  grid-template-columns: repeat(auto-fit, minmax(290px, min(360px, 1fr)));
+  gap: 2rem; max-width: 1160px; margin: 0 auto;
   align-items: start;
+  justify-content: center;
 }
 
 /* ── Cards: developed photograph feel ── */
@@ -899,8 +906,9 @@ body:has(#journal-hero) { background: #04060e; }
 }
 .entry-excerpt {
   font-size: 0.83rem; color: rgba(138,164,204,0.75); line-height: 1.78;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
+.entry-excerpt:last-child { padding-bottom: 1.6rem; }
 .entry-tag {
   font-family: var(--font-pixel); font-size: 0.48rem;
   color: rgba(94,122,170,0.65);

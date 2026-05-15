@@ -28,19 +28,24 @@
   const saved = localStorage.getItem('theme') || 'light';
   html.dataset.theme = saved;
 
-  function updateLabel(btn) {
-    if (!btn) return;
-    btn.textContent = html.dataset.theme === 'dark' ? '◑ DAY' : '◐ NGT';
+  function updateLabels() {
+    const label = html.dataset.theme === 'dark' ? '◑ DAY' : '◐ NGT';
+    document.querySelectorAll('#theme-toggle, #theme-toggle-mm').forEach(btn => {
+      if (btn) btn.textContent = label;
+    });
+  }
+
+  function toggleTheme() {
+    const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+    html.dataset.theme = next;
+    localStorage.setItem('theme', next);
+    updateLabels();
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('theme-toggle');
-    updateLabel(btn);
-    btn?.addEventListener('click', () => {
-      const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
-      html.dataset.theme = next;
-      localStorage.setItem('theme', next);
-      updateLabel(btn);
+    updateLabels();
+    document.querySelectorAll('#theme-toggle, #theme-toggle-mm').forEach(btn => {
+      btn?.addEventListener('click', toggleTheme);
     });
   });
 })();
@@ -164,6 +169,7 @@ function createSnow(canvasId, density, speed = 1) {
 }
 
 createSnow('snow',         130, 1);
+createSnow('journal-snow', 55,  0.65);
 createSnow('contact-snow', 60,  0.7);
 
 /* ─── Pixel Onsen Canvas ─── */

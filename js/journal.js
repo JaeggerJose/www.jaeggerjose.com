@@ -114,9 +114,13 @@ function buildCard(entry, index) {
   article.appendChild(el('h2', 'entry-title', entry.title));
 
   if (entry.content) {
-    const excerpt = entry.content.length > 140
-      ? entry.content.slice(0, 140) + '…'
-      : entry.content;
+    const plain = entry.content
+      .replace(/^#{1,3}\s+/gm, '')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+      .replace(/\n+/g, ' ')
+      .trim();
+    const excerpt = plain.length > 130 ? plain.slice(0, 130) + '…' : plain;
     article.appendChild(el('p', 'entry-excerpt', excerpt));
   }
 
