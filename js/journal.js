@@ -57,6 +57,58 @@ function fmtDate(dateStr) {
   return d.toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' });
 }
 
+function renderMarkdown(text) {
+  const container = document.createElement('div');
+  container.className = 'modal-md';
+  const lines = text.split('\n');
+  let paraLines = [];
+
+  function mkBoldText(line) {
+    const frag  = document.createDocumentFragment();
+    const parts = line.split(/\*\*(.*?)\*\*/g);
+    for (let i = 0; i < parts.length; i++) {
+      if (i % 2 === 0) {
+        if (parts[i]) frag.appendChild(document.createTextNode(parts[i]));
+      } else {
+        const s = document.createElement('strong');
+        s.textContent = parts[i];
+        frag.appendChild(s);
+      }
+    }
+    return frag;
+  }
+
+  function flushPara() {
+    const txt = paraLines.join(' ').trim();
+    if (txt) {
+      const p = document.createElement('p');
+      p.appendChild(mkBoldText(txt));
+      container.appendChild(p);
+    }
+    paraLines = [];
+  }
+
+  for (const line of lines) {
+    if (line.startsWith('## ')) {
+      flushPara();
+      const h = document.createElement('h3');
+      h.textContent = line.slice(3);
+      container.appendChild(h);
+    } else if (line.startsWith('### ')) {
+      flushPara();
+      const h = document.createElement('h4');
+      h.textContent = line.slice(4);
+      container.appendChild(h);
+    } else if (line.trim() === '') {
+      flushPara();
+    } else {
+      paraLines.push(line);
+    }
+  }
+  flushPara();
+  return container;
+}
+
 /* ─── Auth state ─── */
 sb.auth.onAuthStateChange((_event, session) => {
   currentUser = session?.user ?? null;
@@ -175,7 +227,7 @@ function openViewModal(id) {
   modalBody.appendChild(el('h2', 'modal-title', entry.title));
 
   if (entry.content) {
-    modalBody.appendChild(el('div', 'modal-body-text', entry.content));
+    modalBody.appendChild(renderMarkdown(entry.content));
   }
 
   if (entry.images && entry.images.length) {

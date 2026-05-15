@@ -1,5 +1,5 @@
 /* ============================================================
-   works.js — Works · Portfolio — Pixel World Map
+   works.js — Works · Portfolio — Pixel World Map v3
    ============================================================ */
 
 'use strict';
@@ -127,10 +127,19 @@ const PROJECTS = [
   let W = 0, H = 0, t = 0;
   let terrain = null;
 
+  // Animated element data (recomputed on resize)
+  let cityLights = [];
+  let netVerts   = [];
+  let netHoriz   = [];
+  let netNodes   = [];
+  let medCross   = null;
+  const sparkles = [];
+
   function resize() {
     W = canvas.width  = canvas.offsetWidth  || window.innerWidth;
     H = canvas.height = canvas.offsetHeight || window.innerHeight;
     buildTerrain();
+    buildAnimData();
   }
 
   function fillNoise(tx, vc, vr, vw, vh, c1, c2, seed) {
@@ -143,100 +152,262 @@ const PROJECTS = [
     }
   }
 
+  function buildAnimData() {
+    const vw = Math.ceil(W / PX), vh = Math.ceil(H / PX);
+
+    // City lights — random scattered windows
+    const cxb = Math.floor(vw * 0.33), cyb = Math.floor(vh * 0.36);
+    const cwb = Math.floor(vw * 0.24), chb = Math.floor(vh * 0.24);
+    cityLights = [];
+    for (let c = cxb + 1; c < cxb + cwb - 1; c += 2) {
+      for (let r = cyb + 2; r < cyb + chb - 1; r += 2) {
+        if (Math.random() < 0.3) {
+          cityLights.push({
+            x: c * PX, y: r * PX,
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.04 + Math.random() * 0.06,
+            warm: Math.random() > 0.3,
+          });
+        }
+      }
+    }
+
+    // Network grid lines
+    const nxb = Math.floor(vw * 0.63), nyb = Math.floor(vh * 0.30);
+    const nwb = Math.floor(vw * 0.26), nhb = Math.floor(vh * 0.28);
+    netVerts = [];
+    netHoriz = [];
+    for (let c = nxb; c < nxb + nwb; c += 6) {
+      netVerts.push({ x: c * PX, y1: nyb * PX, y2: (nyb + nhb) * PX });
+    }
+    for (let r = nyb; r < nyb + nhb; r += 4) {
+      netHoriz.push({ y: r * PX, x1: nxb * PX, x2: (nxb + nwb) * PX });
+    }
+    netNodes = [];
+    for (const v of netVerts) {
+      for (const h of netHoriz) {
+        netNodes.push({ x: v.x, y: h.y });
+      }
+    }
+
+    // Medical cross center
+    const dxb = Math.floor(vw * 0.47), dyb = Math.floor(vh * 0.55);
+    const dwb = Math.floor(vw * 0.30), dhb = Math.floor(vh * 0.30);
+    const mc  = dxb + Math.floor(dwb * 0.5);
+    const mr  = dyb + Math.floor(dhb * 0.5);
+    medCross = { cx: mc * PX, cy: mr * PX };
+  }
+
   function buildTerrain() {
     const tc = document.createElement('canvas');
     tc.width = W; tc.height = H;
     const tx = tc.getContext('2d');
     const vw = Math.ceil(W / PX), vh = Math.ceil(H / PX);
 
-    // Snow mountain — top-left
+    // ── Snow Mountain (top-left) ────────────────────────────────
     const mx = Math.floor(vw * 0.08), my = Math.floor(vh * 0.05);
     const mw = Math.floor(vw * 0.40), mh = Math.floor(vh * 0.40);
-    fillNoise(tx, mx, my, mw, mh, '#5a6880', '#6878a0', 17);
-    for (let c = mx + 2; c < mx + mw - 2; c += 4) {
-      const ph = 1 + ((c * 3) % 3);
-      fillNoise(tx, c, my + ((c * 2) % 4), 2, ph, '#c8d8e8', '#a8b8d0', c);
+    fillNoise(tx, mx, my, mw, mh, '#3a4d6a', '#4a5e80', 17);
+    for (let c = mx + 2; c < mx + mw - 2; c += 3) {
+      const ph = 2 + ((c * 3) % 4);
+      fillNoise(tx, c, my + ((c * 2) % 3), 2, ph, '#cce0f8', '#b0ccec', c);
     }
+    for (let c = mx + 4; c < mx + mw - 4; c += 9) {
+      tx.fillStyle = '#eef6ff';
+      tx.fillRect(c * PX, (my + (c % 3)) * PX, PX, PX);
+    }
+    const mgrd = tx.createRadialGradient(
+      (mx + mw * 0.5) * PX, (my + mh * 0.25) * PX, 0,
+      (mx + mw * 0.5) * PX, (my + mh * 0.5)  * PX, mw * PX * 0.55
+    );
+    mgrd.addColorStop(0, 'rgba(80, 150, 240, 0.22)');
+    mgrd.addColorStop(1, 'rgba(80, 150, 240, 0)');
+    tx.fillStyle = mgrd;
+    tx.fillRect(mx * PX, my * PX, mw * PX, mh * PX);
 
-    // Forest — top-right
+    // ── Forest (top-right) ──────────────────────────────────────
     const fx = Math.floor(vw * 0.57), fy = Math.floor(vh * 0.05);
     const fw = Math.floor(vw * 0.32), fh = Math.floor(vh * 0.38);
-    fillNoise(tx, fx, fy, fw, fh, '#162018', '#1e2a1e', 83);
+    fillNoise(tx, fx, fy, fw, fh, '#0a1610', '#121e12', 83);
     for (let c = fx + 1; c < fx + fw - 1; c += 3) {
-      for (let r = fy + 1; r < fy + fh - 2; r += 4) {
+      for (let r = fy + 1; r < fy + fh - 2; r += 3) {
         if ((c * 7 + r * 3) % 9 > 4) {
-          tx.fillStyle = '#1e3020';
+          tx.fillStyle = '#162a16';
           tx.fillRect(c * PX, r * PX, PX * 2, PX);
-          tx.fillStyle = '#243828';
+          tx.fillStyle = '#1e3820';
           tx.fillRect(c * PX, (r + 1) * PX, PX * 2, PX);
         }
       }
     }
+    for (let c = fx + 3; c < fx + fw - 3; c += 9) {
+      for (let r = fy + 2; r < fy + fh - 2; r += 7) {
+        if ((c * r) % 7 > 3) {
+          tx.fillStyle = 'rgba(55, 120, 55, 0.35)';
+          tx.fillRect(c * PX, r * PX, PX * 3, PX);
+        }
+      }
+    }
+    const fgrd = tx.createRadialGradient(
+      (fx + fw * 0.5) * PX, (fy + fh * 0.5) * PX, 0,
+      (fx + fw * 0.5) * PX, (fy + fh * 0.5) * PX, fw * PX * 0.5
+    );
+    fgrd.addColorStop(0, 'rgba(40, 110, 40, 0.18)');
+    fgrd.addColorStop(1, 'rgba(40, 110, 40, 0)');
+    tx.fillStyle = fgrd;
+    tx.fillRect(fx * PX, fy * PX, fw * PX, fh * PX);
 
-    // City — center
-    const cx = Math.floor(vw * 0.33), cy = Math.floor(vh * 0.36);
-    const cw = Math.floor(vw * 0.24), ch = Math.floor(vh * 0.24);
-    fillNoise(tx, cx, cy, cw, ch, '#1e2030', '#282848', 55);
-    for (let c = cx + 1; c < cx + cw - 1; c += 3) {
-      const bh = 2 + ((c * 5) % 5);
-      for (let r = cy + ch - bh; r < cy + ch; r++) {
-        tx.fillStyle = (c + r) % 2 === 0 ? '#30305a' : '#282850';
+    // ── City (center) ───────────────────────────────────────────
+    const cxb = Math.floor(vw * 0.33), cyb = Math.floor(vh * 0.36);
+    const cwb = Math.floor(vw * 0.24), chb = Math.floor(vh * 0.24);
+    fillNoise(tx, cxb, cyb, cwb, chb, '#0a0c1c', '#121428', 55);
+    for (let c = cxb + 1; c < cxb + cwb - 1; c += 3) {
+      const bh = 3 + ((c * 5) % 6);
+      for (let r = cyb + chb - bh; r < cyb + chb; r++) {
+        tx.fillStyle = (c + r) % 2 === 0 ? '#181c3a' : '#12163a';
         tx.fillRect(c * PX, r * PX, PX * 2, PX);
       }
-      if ((c * 3) % 5 < 3) {
-        tx.fillStyle = 'rgba(240,200,80,0.6)';
-        tx.fillRect(c * PX, (cy + ch - bh) * PX, PX, PX);
-      }
     }
+    const cgrd = tx.createRadialGradient(
+      (cxb + cwb * 0.5) * PX, (cyb + chb * 0.75) * PX, 0,
+      (cxb + cwb * 0.5) * PX, (cyb + chb * 0.5)  * PX, cwb * PX * 0.65
+    );
+    cgrd.addColorStop(0, 'rgba(200, 140, 30, 0.22)');
+    cgrd.addColorStop(1, 'rgba(200, 140, 30, 0)');
+    tx.fillStyle = cgrd;
+    tx.fillRect(cxb * PX, cyb * PX, cwb * PX, chb * PX);
 
-    // Network — right
-    const nx = Math.floor(vw * 0.63), ny = Math.floor(vh * 0.30);
-    const nw = Math.floor(vw * 0.26), nh = Math.floor(vh * 0.28);
-    fillNoise(tx, nx, ny, nw, nh, '#0c2030', '#163040', 66);
-    for (let c = nx; c < nx + nw; c += 6) {
-      tx.fillStyle = 'rgba(40,140,200,0.28)';
-      tx.fillRect(c * PX, ny * PX, PX, nh * PX);
-    }
-    for (let r = ny; r < ny + nh; r += 4) {
-      tx.fillStyle = 'rgba(40,140,200,0.18)';
-      tx.fillRect(nx * PX, r * PX, nw * PX, PX);
-    }
+    // ── Network (right) ─────────────────────────────────────────
+    const nxb = Math.floor(vw * 0.63), nyb = Math.floor(vh * 0.30);
+    const nwb = Math.floor(vw * 0.26), nhb = Math.floor(vh * 0.28);
+    fillNoise(tx, nxb, nyb, nwb, nhb, '#060c16', '#0a1620', 66);
+    const ngrd = tx.createRadialGradient(
+      (nxb + nwb * 0.5) * PX, (nyb + nhb * 0.5) * PX, 0,
+      (nxb + nwb * 0.5) * PX, (nyb + nhb * 0.5) * PX, nwb * PX * 0.5
+    );
+    ngrd.addColorStop(0, 'rgba(20, 130, 210, 0.25)');
+    ngrd.addColorStop(1, 'rgba(20, 130, 210, 0)');
+    tx.fillStyle = ngrd;
+    tx.fillRect(nxb * PX, nyb * PX, nwb * PX, nhb * PX);
 
-    // Coastal — lower-left
+    // ── Coastal (lower-left) ────────────────────────────────────
     const hx = Math.floor(vw * 0.05), hy = Math.floor(vh * 0.50);
     const hw = Math.floor(vw * 0.30), hh = Math.floor(vh * 0.36);
-    fillNoise(tx, hx, hy, hw, hh, '#243830', '#2e4838', 31);
-    fillNoise(tx, hx, hy, 3, hh, '#3a5840', '#304a38', 45);
+    fillNoise(tx, hx, hy, hw, hh, '#192a19', '#22361e', 31);
+    fillNoise(tx, hx, hy, 3,  hh, '#2c4a28', '#243e22', 45);
+    const hgrd = tx.createLinearGradient(hx * PX, 0, (hx + hw * 0.6) * PX, 0);
+    hgrd.addColorStop(0, 'rgba(50, 140, 70, 0.28)');
+    hgrd.addColorStop(1, 'rgba(50, 140, 70, 0)');
+    tx.fillStyle = hgrd;
+    tx.fillRect(hx * PX, hy * PX, hw * PX, hh * PX);
 
-    // Plains — center-lower
+    // ── Plains (center-lower) ───────────────────────────────────
     const px2 = Math.floor(vw * 0.36), py2 = Math.floor(vh * 0.52);
-    const pw = Math.floor(vw * 0.28), ph2 = Math.floor(vh * 0.22);
-    fillNoise(tx, px2, py2, pw, ph2, '#223028', '#283e30', 92);
+    const pw  = Math.floor(vw * 0.28), ph2 = Math.floor(vh * 0.22);
+    fillNoise(tx, px2, py2, pw, ph2, '#192618', '#20301e', 92);
 
-    // Medical — lower-right
-    const dx = Math.floor(vw * 0.47), dy = Math.floor(vh * 0.55);
-    const dw = Math.floor(vw * 0.30), dh = Math.floor(vh * 0.30);
-    fillNoise(tx, dx, dy, dw, dh, '#163030', '#1e4040', 77);
-    const mc = dx + Math.floor(dw * 0.5), mr = dy + Math.floor(dh * 0.5);
-    tx.fillStyle = 'rgba(80,220,200,0.32)';
-    tx.fillRect(mc * PX, (mr - 2) * PX, PX, PX * 5);
-    tx.fillRect((mc - 2) * PX, mr * PX, PX * 5, PX);
+    // ── Medical (lower-right) ───────────────────────────────────
+    const dxb = Math.floor(vw * 0.47), dyb = Math.floor(vh * 0.55);
+    const dwb = Math.floor(vw * 0.30), dhb = Math.floor(vh * 0.30);
+    fillNoise(tx, dxb, dyb, dwb, dhb, '#081616', '#0c2020', 77);
+    const dgrd = tx.createRadialGradient(
+      (dxb + dwb * 0.5) * PX, (dyb + dhb * 0.5) * PX, 0,
+      (dxb + dwb * 0.5) * PX, (dyb + dhb * 0.5) * PX, dwb * PX * 0.5
+    );
+    dgrd.addColorStop(0, 'rgba(40, 200, 180, 0.22)');
+    dgrd.addColorStop(1, 'rgba(40, 200, 180, 0)');
+    tx.fillStyle = dgrd;
+    tx.fillRect(dxb * PX, dyb * PX, dwb * PX, dhb * PX);
 
     terrain = tc;
   }
 
   function drawOcean() {
-    ctx.fillStyle = '#07101e';
+    ctx.fillStyle = '#030810';
     ctx.fillRect(0, 0, W, H);
     const vw = Math.ceil(W / PX), vh = Math.ceil(H / PX);
+
+    // Static stars (twinkle via opacity)
+    for (let i = 0; i < 50; i++) {
+      const sc    = (i * 37 + i * i * 3) % vw;
+      const sr    = (i * 53 + i * 7)     % vh;
+      const alpha = 0.08 + 0.12 * Math.abs(Math.sin(t * 0.03 + i * 0.8));
+      ctx.fillStyle = `rgba(180, 210, 255, ${alpha.toFixed(2)})`;
+      ctx.fillRect(sc * PX, sr * PX, 2, 2);
+    }
+
+    // Wave shimmer lines
     for (let r = 0; r < vh; r += 2) {
-      const phase = t * 0.022 + r * 0.18;
-      const cols  = Math.floor((Math.sin(phase) + 1) * 3);
+      const phase = t * 0.016 + r * 0.22;
+      const cols  = Math.floor((Math.sin(phase) + 1) * 2);
       for (let i = 0; i < cols; i++) {
-        const c = (Math.floor(t * 0.6 + r * 2.7 + i * 17) % vw + vw) % vw;
-        ctx.fillStyle = r % 4 === 0 ? '#142240' : '#0e1a32';
+        const c = (Math.floor(t * 0.45 + r * 2.9 + i * 21) % vw + vw) % vw;
+        ctx.fillStyle = r % 4 === 0 ? '#0c1c34' : '#081426';
         ctx.fillRect(c * PX, r * PX, PX, PX);
       }
+    }
+  }
+
+  function drawAnimated() {
+    // City window lights flicker
+    for (const l of cityLights) {
+      const bright = 0.5 + 0.5 * Math.sin(t * l.speed + l.phase);
+      if (bright < 0.3) continue;
+      const a = (bright * 0.75).toFixed(2);
+      ctx.fillStyle = l.warm
+        ? `rgba(240, 195, 70, ${a})`
+        : `rgba(160, 210, 255, ${a})`;
+      ctx.fillRect(l.x, l.y, PX, PX);
+    }
+
+    // Network grid pulse
+    if (netVerts.length) {
+      const alpha = (0.12 + 0.14 * Math.sin(t * 0.035)).toFixed(2);
+      ctx.fillStyle = `rgba(40, 140, 220, ${alpha})`;
+      for (const v of netVerts) {
+        ctx.fillRect(v.x, v.y1, PX, v.y2 - v.y1);
+      }
+      for (const h of netHoriz) {
+        ctx.fillRect(h.x1, h.y, h.x2 - h.x1, PX);
+      }
+      const nodeAlpha = (0.25 + 0.2 * Math.sin(t * 0.05)).toFixed(2);
+      ctx.fillStyle = `rgba(80, 180, 255, ${nodeAlpha})`;
+      for (const n of netNodes) {
+        ctx.fillRect(n.x, n.y, PX, PX);
+      }
+    }
+
+    // Medical cross heartbeat pulse
+    if (medCross) {
+      const pulse = 0.25 + 0.35 * Math.abs(Math.sin(t * 0.07));
+      ctx.fillStyle = `rgba(50, 220, 200, ${pulse.toFixed(2)})`;
+      ctx.fillRect(medCross.cx,        medCross.cy - PX * 2, PX, PX * 5);
+      ctx.fillRect(medCross.cx - PX * 2, medCross.cy,       PX * 5, PX);
+      // Outer glow pixels
+      const glow = (pulse * 0.4).toFixed(2);
+      ctx.fillStyle = `rgba(50, 220, 200, ${glow})`;
+      ctx.fillRect(medCross.cx - PX,     medCross.cy - PX * 3, PX, PX);
+      ctx.fillRect(medCross.cx - PX,     medCross.cy + PX * 3, PX, PX);
+      ctx.fillRect(medCross.cx - PX * 3, medCross.cy - PX,     PX, PX);
+      ctx.fillRect(medCross.cx + PX * 3, medCross.cy - PX,     PX, PX);
+    }
+
+    // Snow mountain sparkles
+    if (t % 14 === 0 && sparkles.length < 18) {
+      const vw = Math.ceil(W / PX), vh = Math.ceil(H / PX);
+      const mx = Math.floor(vw * 0.08), my = Math.floor(vh * 0.05);
+      const mw = Math.floor(vw * 0.40), mh = Math.floor(vh * 0.18);
+      const sc = mx + Math.floor(Math.random() * mw);
+      const sr = my + Math.floor(Math.random() * mh);
+      sparkles.push({ x: sc * PX, y: sr * PX, age: 0, maxAge: 22 });
+    }
+    for (let i = sparkles.length - 1; i >= 0; i--) {
+      const s = sparkles[i];
+      s.age++;
+      if (s.age >= s.maxAge) { sparkles.splice(i, 1); continue; }
+      const p = s.age / s.maxAge;
+      const a = (p < 0.3 ? p / 0.3 : Math.max(0, (1 - p) / 0.7)).toFixed(2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${a})`;
+      ctx.fillRect(s.x, s.y, PX, PX);
     }
   }
 
@@ -247,6 +418,7 @@ const PROJECTS = [
     t++;
     drawOcean();
     if (terrain) ctx.drawImage(terrain, 0, 0);
+    drawAnimated();
     requestAnimationFrame(loop);
   })();
 })();
@@ -257,22 +429,23 @@ const PROJECTS = [
   if (!container) return;
   PROJECTS.forEach(p => {
     const btn  = document.createElement('button');
-    btn.className  = 'map-pin';
+    btn.className   = 'map-pin';
     btn.dataset.pid = p.id;
-    btn.style.left = p.mapX + '%';
-    btn.style.top  = p.mapY + '%';
+    btn.style.left  = p.mapX + '%';
+    btn.style.top   = p.mapY + '%';
     btn.setAttribute('aria-label', '開啟專案：' + p.title);
 
     const glow = document.createElement('span');
     glow.className = 'pin-glow';
-    glow.style.background = p.pinColor;
+    glow.style.setProperty('--pin-color', p.pinColor);
 
     const core = document.createElement('span');
     core.className = 'pin-core';
     core.style.background = p.pinColor;
+    core.style.boxShadow  = `0 0 8px 2px ${p.pinColor}88, 0 0 0 1px ${p.pinColor}55`;
 
     const lbl = document.createElement('span');
-    lbl.className = 'pin-lbl';
+    lbl.className   = 'pin-lbl';
     lbl.style.color = p.pinColor;
     lbl.textContent = p.title;
 
@@ -295,29 +468,34 @@ function openPanel(pid) {
   const mk = (tag, cls, text) => {
     const el = document.createElement(tag);
     if (cls)  el.className   = cls;
-    if (text) el.textContent = text;
+    if (text !== undefined) el.textContent = text;
     return el;
   };
 
-  const biomeEl = mk('p', 'panel-biome', p.sub.split('·')[0].trim().toUpperCase());
-  const yearEl  = mk('p', 'panel-year',  p.year);
-  const titleEl = mk('h2','panel-title', p.title);
-  const subEl   = mk('p', 'panel-sub',   p.sub);
-  const descEl  = mk('p', 'panel-desc',  p.desc);
+  const biomeEl = mk('p',  'panel-biome', p.sub.split('·')[0].trim().toUpperCase());
+  const yearEl  = mk('p',  'panel-year',  p.year);
+  const titleEl = mk('h2', 'panel-title', p.title);
+  const subEl   = mk('p',  'panel-sub',   p.sub);
+  const descEl  = mk('p',  'panel-desc',  p.desc);
 
   const chips = mk('div', 'panel-chips');
   p.tech.forEach(t => chips.appendChild(mk('span', 'chip', t)));
 
   const gh = document.createElement('a');
-  gh.className = 'panel-gh';
-  gh.href      = p.github;
-  gh.target    = '_blank';
-  gh.rel       = 'noopener noreferrer';
+  gh.className   = 'panel-gh';
+  gh.href        = p.github;
+  gh.target      = '_blank';
+  gh.rel         = 'noopener noreferrer';
   gh.textContent = 'View on GitHub →';
 
-  body.append(biomeEl, yearEl, titleEl, subEl, descEl, chips, gh);
+  // Color accent bar
+  const accent = mk('div', 'panel-accent');
+  accent.style.background = `linear-gradient(90deg, ${p.pinColor}44, transparent)`;
+  accent.style.borderLeft = `3px solid ${p.pinColor}`;
+
+  body.append(accent, biomeEl, yearEl, titleEl, subEl, descEl, chips, gh);
   panel.classList.add('open');
-  overlay.classList.add('visible');
+  if (overlay) overlay.classList.add('visible');
 }
 
 function closePanel() {

@@ -988,6 +988,23 @@ body:has(#journal-hero) { background: #04060e; }
   font-size: 0.97rem; color: rgba(138,164,204,0.82);
   line-height: 1.95; white-space: pre-wrap;
 }
+.modal-md { margin-top: 1.25rem; }
+.modal-md p {
+  font-size: 0.97rem; color: rgba(138,164,204,0.82);
+  line-height: 1.95; margin-bottom: 1rem;
+}
+.modal-md h3 {
+  font-family: var(--font-pixel); font-size: 0.62rem;
+  letter-spacing: 0.2em; color: var(--steam);
+  margin: 1.8rem 0 0.9rem; padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(61,214,200,0.18);
+}
+.modal-md h4 {
+  font-family: var(--font-pixel); font-size: 0.56rem;
+  letter-spacing: 0.15em; color: rgba(61,214,200,0.7);
+  margin: 1.4rem 0 0.6rem;
+}
+.modal-md strong { color: var(--snow); font-weight: 600; }
 .modal-images {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 0.5rem; margin-top: 1.75rem;
