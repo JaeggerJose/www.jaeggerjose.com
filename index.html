@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ming-Hsuan Liao — Full-stack Software Engineer, NYCU Taiwan.">
+  <title>廖明軒 · Ming-Hsuan Liao</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+
+  <!-- Navigation -->
+  <nav id="nav">
+    <a class="nav-logo" href="#hero">MHL<span>廖明軒</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">ABOUT</a></li>
+      <li><a href="#work">WORK</a></li>
+      <li><a href="#education">SCHOOL</a></li>
+      <li><a href="#skills">SKILLS</a></li>
+      <li><a href="#contact">CONTACT</a></li>
+    </ul>
+    <button class="nav-menu" id="nav-menu" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#about" class="mm-link">ABOUT</a>
+    <a href="#work" class="mm-link">WORK</a>
+    <a href="#education" class="mm-link">SCHOOL</a>
+    <a href="#skills" class="mm-link">SKILLS</a>
+    <a href="#contact" class="mm-link">CONTACT</a>
+  </div>
+
+  <!-- ─── Hero ─── -->
+  <section id="hero">
+    <canvas id="snow"></canvas>
+
+    <svg id="mountains" viewBox="0 0 1440 480" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Far range -->
+      <polygon points="0,480 160,200 310,275 470,145 630,215 790,115 950,175 1110,155 1280,195 1440,165 1440,480" fill="#091120"/>
+      <polygon points="470,145 492,176 448,176" fill="#dce8ff" opacity="0.5"/>
+      <polygon points="790,115 814,150 766,150" fill="#dce8ff" opacity="0.65"/>
+      <polygon points="1110,155 1132,185 1088,185" fill="#dce8ff" opacity="0.45"/>
+      <!-- Mid range -->
+      <polygon points="0,480 90,345 210,415 370,295 525,375 685,270 845,340 1005,285 1165,355 1325,305 1440,335 1440,480" fill="#0a1525"/>
+      <polygon points="370,295 390,322 350,322" fill="#dce8ff" opacity="0.35"/>
+      <polygon points="685,270 707,300 663,300" fill="#dce8ff" opacity="0.45"/>
+      <!-- Fore hills -->
+      <polygon points="0,480 110,415 250,455 410,395 565,445 725,385 885,435 1045,395 1205,435 1365,405 1440,425 1440,480" fill="#080e1c"/>
+      <!-- Pixel pine trees -->
+      <rect x="155" y="403" width="4" height="12" fill="#0a1525"/>
+      <polygon points="157,390 149,405 165,405" fill="#0c1b30"/>
+      <polygon points="157,397 148,412 166,412" fill="#09172b"/>
+      <rect x="1295" y="393" width="4" height="14" fill="#091120"/>
+      <polygon points="1297,379 1289,394 1305,394" fill="#0c1b30"/>
+      <polygon points="1297,386 1288,402 1306,402" fill="#09172b"/>
+      <rect x="1055" y="412" width="4" height="10" fill="#0a1525"/>
+      <polygon points="1057,401 1050,414 1064,414" fill="#0c1b30"/>
+    </svg>
+
+    <!-- Onsen steam (bottom-left) -->
+    <div class="steam-group" aria-hidden="true">
+      <div class="steam-puff"></div>
+      <div class="steam-puff"></div>
+      <div class="steam-puff"></div>
+      <div class="steam-puff"></div>
+      <div class="steam-puff"></div>
+    </div>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow">雪 国 · Y U K I G U N I</p>
+      <h1 class="hero-name">MING-HSUAN<br>LIAO</h1>
+      <p class="hero-kanji">廖 &thinsp; 明 &thinsp; 軒</p>
+      <p class="hero-typewriter"><span id="tw-text"></span><span class="tw-cursor" aria-hidden="true">▊</span></p>
+      <div class="hero-tags">
+        <span class="tag">FULL-STACK</span>
+        <span class="tag">NYCU · TAIWAN</span>
+        <span class="tag">ZH · EN · DE · FR</span>
+      </div>
+    </div>
+
+    <a href="#about" class="scroll-cue" aria-label="Scroll down">
+      <span>SCROLL</span>
+      <div class="scroll-chevron"></div>
+    </a>
+  </section>
+
+  <!-- ─── About ─── -->
+  <section id="about">
+    <div class="about-grid">
+      <div class="about-left">
+        <span class="label">ABOUT · 自己紹介</span>
+        <h2>Building at the<br>intersection of<br><em>craft &amp; code.</em></h2>
+        <blockquote>
+          <p>"The border tunnel was long, and when they came out of it, the snow country spread before them."</p>
+          <cite>— Kawabata Yasunari, 雪国</cite>
+        </blockquote>
+        <p class="body-text">Full-stack software engineer and MSc student at NYCU, Taiwan. My work spans web engineering, AI research, and distributed systems — with a particular interest in the places where performance meets elegance.</p>
+        <p class="body-text">Previously at CGU AI Center, Praexisio, Comboware, and Ulink. Exchange student at Sorbonne Université, Paris.</p>
+        <div class="lang-row">
+          <span class="lang-pill">中文</span>
+          <span class="lang-pill">English</span>
+          <span class="lang-pill">Deutsch</span>
+          <span class="lang-pill">Français</span>
+        </div>
+      </div>
+      <div class="about-right">
+        <div class="stat-card reveal">
+          <span class="stat-label">LOCATION</span>
+          <span class="stat-value">Hsinchu, Taiwan</span>
+          <span class="stat-sub">Previously · Paris, France</span>
+        </div>
+        <div class="stat-card reveal">
+          <span class="stat-label">DEGREE</span>
+          <span class="stat-value">MSc Computer Science</span>
+          <span class="stat-sub">NYCU · 2025</span>
+        </div>
+        <div class="stat-card reveal">
+          <span class="stat-label">PUBLICATION</span>
+          <span class="stat-value">IEEE Journal · 2023</span>
+          <span class="stat-sub">Genome mapping &amp; privacy-secured search</span>
+        </div>
+        <div class="stat-card reveal">
+          <span class="stat-label">LANGUAGES</span>
+          <span class="stat-value">IELTS 6.5 &nbsp;·&nbsp; TestDaf 3</span>
+          <span class="stat-sub">English · German</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Work ─── -->
+  <section id="work">
+    <div class="section-inner">
+      <span class="label">EXPERIENCE · 爐端燒</span>
+      <h2 class="section-h2">Work<br><small>Forged by fire</small></h2>
+      <div class="timeline">
+        <div class="tl-item reveal">
+          <div class="tl-dot"></div>
+          <div class="tl-date">2024 — Present</div>
+          <div class="tl-title">Software Engineer</div>
+          <div class="tl-company">Comboware &amp; Ulink</div>
+          <p class="tl-desc">Full-stack engineering across two companies simultaneously. Building production systems covering API design, distributed backends, and modern web frontends.</p>
+        </div>
+        <div class="tl-item reveal">
+          <div class="tl-dot"></div>
+          <div class="tl-date">2023</div>
+          <div class="tl-title">Software Engineer</div>
+          <div class="tl-company">CGU AI Center</div>
+          <p class="tl-desc">AI research infrastructure at Chang Gung University. ML pipelines supporting genome-mapping research and privacy-preserving search systems (IEEE published 2023).</p>
+        </div>
+        <div class="tl-item reveal">
+          <div class="tl-dot"></div>
+          <div class="tl-date">2022</div>
+          <div class="tl-title">Product Engineer</div>
+          <div class="tl-company">Praexisio Taiwan Inc.</div>
+          <p class="tl-desc">Early-stage product engineering at a startup. Built features from concept through deployment, working across the full stack in a fast-moving environment.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Education ─── -->
+  <section id="education">
+    <span class="label">EDUCATION · 滑雪</span>
+    <h2 class="section-h2 edu-heading">Schools<br><small>Higher · further · faster</small></h2>
+    <div class="edu-grid">
+      <div class="edu-card reveal">
+        <span class="edu-badge">MSc</span>
+        <span class="edu-year">2025</span>
+        <h3>Computer Science</h3>
+        <p>National Yang Ming Chiao Tung University</p>
+        <span class="edu-loc">Hsinchu, Taiwan</span>
+      </div>
+      <div class="edu-card reveal">
+        <span class="edu-badge">Exchange</span>
+        <span class="edu-year">2025</span>
+        <h3>Informatique</h3>
+        <p>Sorbonne Université</p>
+        <span class="edu-loc">Paris, France</span>
+      </div>
+      <div class="edu-card reveal">
+        <span class="edu-badge">BSc</span>
+        <span class="edu-year">2019 – 2025</span>
+        <h3>CSIE</h3>
+        <p>Chang Gung University</p>
+        <span class="edu-loc">Taoyuan, Taiwan</span>
+      </div>
+      <div class="edu-card reveal">
+        <span class="edu-badge">HS</span>
+        <span class="edu-year">2016 – 2019</span>
+        <h3>St. Viator Catholic</h3>
+        <p>High School</p>
+        <span class="edu-loc">Taichung, Taiwan</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Skills ─── -->
+  <section id="skills">
+    <div class="section-inner">
+      <span class="label">SKILLS · 天婦羅</span>
+      <h2 class="section-h2">Tech Stack<br><small>Precision &amp; lightness</small></h2>
+      <div class="skills-bento">
+        <div class="skill-block reveal" data-col="wide">
+          <span class="skill-cat">Frontend</span>
+          <div class="skill-chips">
+            <span class="chip">TypeScript</span>
+            <span class="chip">React</span>
+            <span class="chip">Vue.js</span>
+            <span class="chip">Next.js</span>
+            <span class="chip">CSS · Tailwind</span>
+            <span class="chip">WebGL</span>
+          </div>
+        </div>
+        <div class="skill-block reveal" data-col="wide">
+          <span class="skill-cat">Backend</span>
+          <div class="skill-chips">
+            <span class="chip">Node.js</span>
+            <span class="chip">Python</span>
+            <span class="chip">Go</span>
+            <span class="chip">REST · GraphQL</span>
+            <span class="chip">PostgreSQL</span>
+            <span class="chip">Redis</span>
+          </div>
+        </div>
+        <div class="skill-block reveal" data-col="third">
+          <span class="skill-cat">AI · Research</span>
+          <div class="skill-chips">
+            <span class="chip">PyTorch</span>
+            <span class="chip">LLM Fine-tuning</span>
+            <span class="chip">IEEE Published</span>
+          </div>
+        </div>
+        <div class="skill-block reveal" data-col="third">
+          <span class="skill-cat">Systems</span>
+          <div class="skill-chips">
+            <span class="chip">C / C++</span>
+            <span class="chip">Docker</span>
+            <span class="chip">Linux</span>
+            <span class="chip">Git</span>
+          </div>
+        </div>
+        <div class="skill-block reveal" data-col="third">
+          <span class="skill-cat">Languages</span>
+          <div class="skill-chips">
+            <span class="chip">中文 Native</span>
+            <span class="chip">English IELTS 6.5</span>
+            <span class="chip">Deutsch TestDaf 3</span>
+            <span class="chip">Français</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Contact ─── -->
+  <section id="contact">
+    <canvas id="contact-snow"></canvas>
+    <div class="contact-inner">
+      <span class="label">CONTACT · 温泉</span>
+      <h2 class="contact-h2">Let's connect.</h2>
+      <p class="contact-sub">Warm up by the fire — I'd love to hear from you.</p>
+      <a class="contact-email" href="mailto:lms025187@gmail.com">lms025187@gmail.com</a>
+      <div class="social-row">
+        <a class="social-btn" href="https://github.com/jaeggerjose" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a class="social-btn" href="https://instagram.com/pretty_good_mate" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a class="social-btn" href="https://x.com/kumivue67750" target="_blank" rel="noopener noreferrer">X / Twitter</a>
+        <a class="social-btn" href="tel:+886968926910">+886 968 926 910</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="foot-l">© 2025 Ming-Hsuan Liao · 廖明軒</span>
+    <span class="foot-r">雪国 · 温泉 · 滑雪 · 爐端燒 · 天婦羅</span>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
