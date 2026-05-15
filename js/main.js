@@ -4,6 +4,24 @@
 
 'use strict';
 
+/* ─── Page Transitions ─── */
+(function () {
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href') || '';
+    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || a.target === '_blank') return;
+    try {
+      const dest = new URL(href, location.href);
+      if (dest.origin !== location.origin) return;
+      if (dest.pathname === location.pathname && !dest.search) return;
+    } catch { return; }
+    e.preventDefault();
+    document.body.style.opacity = '0';
+    setTimeout(() => { location.href = a.href; }, 310);
+  });
+})();
+
 /* ─── Day / Night Mode ─── */
 (function () {
   const html = document.documentElement;
