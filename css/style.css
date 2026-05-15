@@ -141,7 +141,7 @@ body::after {
   display: flex; gap: 2.2rem; list-style: none;
 }
 .nav-links a {
-  font-family: var(--font-pixel); font-size: 0.42rem;
+  font-family: var(--font-pixel); font-size: 0.65rem;
   color: var(--dark-muted-text); letter-spacing: 0.2em; transition: color 0.2s;
 }
 .nav-links a:hover, .nav-links a.active { color: var(--steam); }
@@ -204,7 +204,7 @@ body::after {
 }
 .hero-eyebrow {
   font-family: var(--font-pixel);
-  font-size: clamp(0.38rem, 1vw, 0.58rem);
+  font-size: clamp(0.58rem, 1.2vw, 0.82rem);
   color: var(--steam); letter-spacing: 0.55em; margin-bottom: 2rem;
   opacity: 0; animation: slide-up 0.7s ease forwards 0.3s;
 }
@@ -223,7 +223,7 @@ body::after {
 }
 .hero-typewriter {
   font-family: var(--font-pixel);
-  font-size: clamp(0.38rem, 1.1vw, 0.62rem);
+  font-size: clamp(0.58rem, 1.3vw, 0.85rem);
   color: var(--fire); letter-spacing: 0.2em; min-height: 1.5em; margin-bottom: 2.5rem;
   opacity: 0; animation: slide-up 0.7s ease forwards 1.2s;
 }
@@ -235,7 +235,7 @@ body::after {
   opacity: 0; animation: slide-up 0.7s ease forwards 1.5s;
 }
 .tag {
-  font-family: var(--font-pixel); font-size: 0.38rem; letter-spacing: 0.2em;
+  font-family: var(--font-pixel); font-size: 0.56rem; letter-spacing: 0.2em;
   padding: 0.55rem 1rem;
   border: 1px solid var(--dark-muted); color: var(--dark-muted-text);
   transition: border-color 0.25s, color 0.25s, box-shadow 0.25s;
@@ -248,7 +248,7 @@ body::after {
   opacity: 0; animation: slide-up 0.7s ease forwards 2.2s;
 }
 .scroll-cue span {
-  font-family: var(--font-pixel); font-size: 0.35rem;
+  font-family: var(--font-pixel); font-size: 0.52rem;
   color: var(--dark-muted-text); letter-spacing: 0.35em;
 }
 .scroll-chevron {
@@ -268,7 +268,7 @@ section { padding: var(--pad-y) var(--pad-x); }
 
 .label {
   display: block;
-  font-family: var(--font-pixel); font-size: 0.42rem;
+  font-family: var(--font-pixel); font-size: 0.65rem;
   color: var(--moss); letter-spacing: 0.35em; margin-bottom: 1.5rem;
 }
 .section-h2 {
@@ -277,7 +277,7 @@ section { padding: var(--pad-y) var(--pad-x); }
   font-weight: 700; line-height: 1.1; margin-bottom: 4rem; color: var(--ink);
 }
 .section-h2 small {
-  display: block; font-family: var(--font-pixel); font-size: 0.42rem;
+  display: block; font-family: var(--font-pixel); font-size: 0.65rem;
   color: var(--akache); letter-spacing: 0.3em; margin-top: 0.9rem; font-weight: 400;
 }
 .section-inner { max-width: 860px; margin: 0 auto; }
@@ -289,10 +289,13 @@ section { padding: var(--pad-y) var(--pad-x); }
 }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
-/* ─── About (淺色) ─── */
+/* ─── About (淺色) — 和紙點陣底紋・雪国 ─── */
 #about {
   background: var(--paper);
   border-bottom: 1px solid var(--muted-border);
+  background-image:
+    radial-gradient(circle, rgba(74,124,111,0.07) 1.5px, transparent 1.5px);
+  background-size: 28px 28px;
 }
 .about-grid {
   display: grid;
@@ -317,13 +320,13 @@ blockquote p {
   font-style: italic; color: var(--ink-dim); line-height: 1.65; margin-bottom: 0.6rem;
 }
 blockquote cite {
-  font-family: var(--font-pixel); font-size: 0.38rem;
+  font-family: var(--font-pixel); font-size: 0.56rem;
   color: var(--akache); letter-spacing: 0.2em; font-style: normal;
 }
 
 .lang-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; }
 .lang-pill {
-  font-family: var(--font-pixel); font-size: 0.38rem;
+  font-family: var(--font-pixel); font-size: 0.56rem;
   padding: 0.5rem 0.85rem;
   background: var(--paper-alt); border: 1px solid var(--muted-border); color: var(--ink-dim);
   letter-spacing: 0.15em; transition: border-color 0.2s, color 0.2s;
@@ -344,7 +347,7 @@ blockquote cite {
 .stat-card:hover { background: var(--paper-deep); border-color: var(--moss); transform: translateX(5px); }
 .stat-card:hover::before { transform: scaleY(1); }
 .stat-label {
-  font-family: var(--font-pixel); font-size: 0.38rem;
+  font-family: var(--font-pixel); font-size: 0.56rem;
   color: var(--moss); letter-spacing: 0.25em;
 }
 .stat-value { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--ink); }
@@ -376,9 +379,14 @@ blockquote cite {
   position: absolute; left: -2.05rem; top: 0.35rem; width: 10px; height: 10px;
   background: var(--akache);
   box-shadow: 0 0 0 3px var(--paper-alt), 0 0 10px rgba(200, 96, 58, 0.4);
+  animation: ember-pulse 2.8s ease-in-out infinite;
+}
+@keyframes ember-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px var(--paper-alt), 0 0 8px rgba(200,96,58,0.4); }
+  50%       { box-shadow: 0 0 0 3px var(--paper-alt), 0 0 22px rgba(240,144,74,0.85), 0 0 36px rgba(200,96,58,0.25); }
 }
 .tl-date {
-  font-family: var(--font-pixel); font-size: 0.4rem;
+  font-family: var(--font-pixel); font-size: 0.6rem;
   color: var(--akache); letter-spacing: 0.2em; margin-bottom: 0.6rem;
 }
 .tl-title {
@@ -386,15 +394,24 @@ blockquote cite {
   color: var(--ink); margin-bottom: 0.3rem;
 }
 .tl-company {
-  font-family: var(--font-pixel); font-size: 0.4rem;
+  font-family: var(--font-pixel); font-size: 0.6rem;
   color: var(--akache-lt); letter-spacing: 0.2em; margin-bottom: 0.8rem;
 }
 .tl-desc { font-size: 0.95rem; color: var(--muted-text); line-height: 1.78; max-width: 560px; }
 
-/* ─── Education (淺色) ─── */
+/* ─── Education (淺色) — 滑雪斜坡紋 ─── */
 #education {
   background: var(--paper);
   border-bottom: 1px solid var(--muted-border);
+  position: relative; overflow: hidden;
+}
+#education::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(
+    -50deg,
+    transparent, transparent 72px,
+    rgba(74, 124, 111, 0.04) 72px, rgba(74, 124, 111, 0.04) 73px
+  );
 }
 #education > .label { max-width: 1200px; margin-left: auto; margin-right: auto; }
 .edu-heading {
@@ -426,19 +443,22 @@ blockquote cite {
 .edu-card:hover::after { transform: scaleX(1); }
 .edu-badge {
   display: inline-block; align-self: flex-start;
-  font-family: var(--font-pixel); font-size: 0.38rem;
+  font-family: var(--font-pixel); font-size: 0.56rem;
   color: var(--moss); background: var(--moss-dim); padding: 0.3rem 0.6rem;
   letter-spacing: 0.15em; margin-bottom: 0.4rem;
 }
-.edu-year { font-family: var(--font-pixel); font-size: 0.38rem; color: var(--muted-text); letter-spacing: 0.2em; }
+.edu-year { font-family: var(--font-pixel); font-size: 0.56rem; color: var(--muted-text); letter-spacing: 0.2em; }
 .edu-card h3 { font-family: var(--font-serif); font-size: 1.2rem; font-weight: 600; color: var(--ink); margin-top: 0.2rem; }
 .edu-card p  { font-size: 0.9rem; color: var(--muted-text); }
-.edu-loc { font-family: var(--font-pixel); font-size: 0.36rem; color: var(--muted-text); letter-spacing: 0.15em; margin-top: 0.3rem; }
+.edu-loc { font-family: var(--font-pixel); font-size: 0.52rem; color: var(--muted-text); letter-spacing: 0.15em; margin-top: 0.3rem; }
 
-/* ─── Skills (淺色) ─── */
+/* ─── Skills (淺色) — 天婦羅金光 ─── */
 #skills {
   background: var(--paper-alt);
   border-bottom: 1px solid rgba(74, 124, 111, 0.15);
+}
+.skill-block[data-col="wide"] {
+  background: linear-gradient(135deg, var(--paper) 0%, rgba(245,196,96,0.06) 100%);
 }
 #skills .section-h2 small { color: var(--moss); }
 
@@ -454,24 +474,65 @@ blockquote cite {
   box-shadow: 0 6px 20px rgba(26,20,16,0.08);
 }
 .skill-cat {
-  display: block; font-family: var(--font-pixel); font-size: 0.4rem;
+  display: block; font-family: var(--font-pixel); font-size: 0.6rem;
   color: var(--moss); letter-spacing: 0.25em; margin-bottom: 1.2rem;
 }
 .skill-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .chip {
-  font-family: var(--font-pixel); font-size: 0.36rem;
+  font-family: var(--font-pixel); font-size: 0.52rem;
   padding: 0.4rem 0.7rem; background: var(--paper-alt); border: 1px solid var(--muted-border);
   color: var(--ink-dim); letter-spacing: 0.1em;
   transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
 .chip:hover { border-color: var(--moss); color: var(--moss); background: var(--moss-dim); }
 
-/* ─── Contact (深色保留) ─── */
+/* ─── Contact (深色保留) — 温泉漣漪 ─── */
 #contact {
   background: var(--void);
   text-align: center; position: relative; overflow: hidden;
 }
+#contact::before,
+#contact::after {
+  content: ''; position: absolute; border-radius: 50%;
+  left: 50%; bottom: -12rem;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+#contact::before {
+  width: 560px; height: 560px;
+  border: 1px solid rgba(61, 214, 200, 0.10);
+  animation: onsen-ripple 6s ease-in-out infinite;
+}
+#contact::after {
+  width: 820px; height: 820px;
+  border: 1px solid rgba(61, 214, 200, 0.05);
+  animation: onsen-ripple 6s ease-in-out infinite 2s;
+}
+@keyframes onsen-ripple {
+  0%, 100% { transform: translateX(-50%) scale(0.95); opacity: 0.7; }
+  50%       { transform: translateX(-50%) scale(1.06); opacity: 0.2; }
+}
 #contact-snow { position: absolute; inset: 0; pointer-events: none; opacity: 0.45; }
+.contact-steam-group {
+  position: absolute; bottom: 35%; left: 50%;
+  transform: translateX(-50%); width: 160px; height: 80px;
+  pointer-events: none; z-index: 0;
+}
+.contact-steam {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle, rgba(61,214,200,0.18) 0%, transparent 70%);
+  animation: contact-steam-rise 4.5s ease-in infinite;
+}
+.contact-steam:nth-child(1) { width:18px; height:18px; left:10px;  animation-delay:0s;    }
+.contact-steam:nth-child(2) { width:12px; height:12px; left:35px;  animation-delay:0.8s;  }
+.contact-steam:nth-child(3) { width:22px; height:22px; left:60px;  animation-delay:1.6s;  }
+.contact-steam:nth-child(4) { width:14px; height:14px; left:88px;  animation-delay:2.4s;  }
+.contact-steam:nth-child(5) { width:20px; height:20px; left:115px; animation-delay:3.2s;  }
+.contact-steam:nth-child(6) { width:10px; height:10px; left:45px;  animation-delay:4s;    }
+@keyframes contact-steam-rise {
+  0%   { opacity: 0.8; transform: translateY(0) scale(1); }
+  100% { opacity: 0;   transform: translateY(-90px) scale(0.3); }
+}
 .contact-inner { position: relative; z-index: 1; }
 
 /* contact label — 覆寫回深色主題 */
@@ -483,7 +544,7 @@ blockquote cite {
   color: var(--snow);
 }
 .contact-sub {
-  font-family: var(--font-pixel); font-size: 0.42rem;
+  font-family: var(--font-pixel); font-size: 0.65rem;
   color: var(--dark-muted-text); letter-spacing: 0.25em; margin-bottom: 2.5rem;
 }
 .contact-email {
@@ -501,7 +562,7 @@ blockquote cite {
 
 .social-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.8rem; }
 .social-btn {
-  font-family: var(--font-pixel); font-size: 0.4rem;
+  font-family: var(--font-pixel); font-size: 0.6rem;
   color: var(--dark-muted-text); padding: 0.8rem 1.4rem;
   border: 1px solid var(--dark-muted); letter-spacing: 0.2em;
   transition: color 0.25s, border-color 0.25s, background 0.25s;
@@ -517,7 +578,7 @@ footer {
   align-items: center; flex-wrap: wrap; gap: 1rem;
 }
 .foot-l, .foot-r {
-  font-family: var(--font-pixel); font-size: 0.36rem;
+  font-family: var(--font-pixel); font-size: 0.52rem;
   color: var(--dark-muted-text); letter-spacing: 0.15em;
 }
 
