@@ -22,9 +22,16 @@ const sections = ['hero','about','work','education','skills','contact'].map(
   id => document.getElementById(id)
 ).filter(Boolean);
 
+const heroEl = document.getElementById('hero');
+
 function onScroll() {
   if (!nav) return;
-  nav.classList.toggle('scrolled', window.scrollY > 60);
+  const heroBottom = heroEl ? heroEl.offsetTop + heroEl.offsetHeight : 0;
+  const pastHero   = window.scrollY > heroBottom - 120;
+
+  // Dark nav over hero, light nav over content
+  nav.classList.toggle('scrolled', window.scrollY > 60 && !pastHero);
+  nav.classList.toggle('on-light', pastHero);
 
   let current = '';
   for (const s of sections) {
