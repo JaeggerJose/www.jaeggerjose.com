@@ -131,7 +131,7 @@ body::after {
 
 .nav-logo {
   font-family: var(--font-pixel);
-  font-size: 0.6rem; letter-spacing: 0.1em; line-height: 1.7;
+  font-size: 0.82rem; letter-spacing: 0.1em; line-height: 1.7;
   display: flex; flex-direction: column;
   color: var(--snow);
 }
@@ -141,7 +141,7 @@ body::after {
   display: flex; gap: 2.2rem; list-style: none;
 }
 .nav-links a {
-  font-family: var(--font-pixel); font-size: 0.65rem;
+  font-family: var(--font-pixel); font-size: 0.88rem;
   color: var(--dark-muted-text); letter-spacing: 0.2em; transition: color 0.2s;
 }
 .nav-links a:hover, .nav-links a.active { color: var(--steam); }
@@ -204,7 +204,7 @@ body::after {
 }
 .hero-eyebrow {
   font-family: var(--font-pixel);
-  font-size: clamp(0.58rem, 1.2vw, 0.82rem);
+  font-size: clamp(0.75rem, 1.2vw, 0.95rem);
   color: var(--steam); letter-spacing: 0.55em; margin-bottom: 2rem;
   opacity: 0; animation: slide-up 0.7s ease forwards 0.3s;
 }
@@ -223,7 +223,7 @@ body::after {
 }
 .hero-typewriter {
   font-family: var(--font-pixel);
-  font-size: clamp(0.58rem, 1.3vw, 0.85rem);
+  font-size: clamp(0.75rem, 1.3vw, 0.98rem);
   color: var(--fire); letter-spacing: 0.2em; min-height: 1.5em; margin-bottom: 2.5rem;
   opacity: 0; animation: slide-up 0.7s ease forwards 1.2s;
 }
@@ -235,7 +235,7 @@ body::after {
   opacity: 0; animation: slide-up 0.7s ease forwards 1.5s;
 }
 .tag {
-  font-family: var(--font-pixel); font-size: 0.56rem; letter-spacing: 0.2em;
+  font-family: var(--font-pixel); font-size: 0.75rem; letter-spacing: 0.2em;
   padding: 0.55rem 1rem;
   border: 1px solid var(--dark-muted); color: var(--dark-muted-text);
   transition: border-color 0.25s, color 0.25s, box-shadow 0.25s;
@@ -248,7 +248,7 @@ body::after {
   opacity: 0; animation: slide-up 0.7s ease forwards 2.2s;
 }
 .scroll-cue span {
-  font-family: var(--font-pixel); font-size: 0.52rem;
+  font-family: var(--font-pixel); font-size: 0.75rem;
   color: var(--dark-muted-text); letter-spacing: 0.35em;
 }
 .scroll-chevron {
@@ -268,7 +268,7 @@ section { padding: var(--pad-y) var(--pad-x); }
 
 .label {
   display: block;
-  font-family: var(--font-pixel); font-size: 0.65rem;
+  font-family: var(--font-pixel); font-size: 0.88rem;
   color: var(--moss); letter-spacing: 0.35em; margin-bottom: 1.5rem;
 }
 .section-h2 {
@@ -277,7 +277,7 @@ section { padding: var(--pad-y) var(--pad-x); }
   font-weight: 700; line-height: 1.1; margin-bottom: 4rem; color: var(--ink);
 }
 .section-h2 small {
-  display: block; font-family: var(--font-pixel); font-size: 0.65rem;
+  display: block; font-family: var(--font-pixel); font-size: 0.88rem;
   color: var(--akache); letter-spacing: 0.3em; margin-top: 0.9rem; font-weight: 400;
 }
 .section-inner { max-width: 860px; margin: 0 auto; }
@@ -320,13 +320,13 @@ blockquote p {
   font-style: italic; color: var(--ink-dim); line-height: 1.65; margin-bottom: 0.6rem;
 }
 blockquote cite {
-  font-family: var(--font-pixel); font-size: 0.56rem;
+  font-family: var(--font-pixel); font-size: 0.75rem;
   color: var(--akache); letter-spacing: 0.2em; font-style: normal;
 }
 
 .lang-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; }
 .lang-pill {
-  font-family: var(--font-pixel); font-size: 0.56rem;
+  font-family: var(--font-pixel); font-size: 0.75rem;
   padding: 0.5rem 0.85rem;
   background: var(--paper-alt); border: 1px solid var(--muted-border); color: var(--ink-dim);
   letter-spacing: 0.15em; transition: border-color 0.2s, color 0.2s;
@@ -347,7 +347,7 @@ blockquote cite {
 .stat-card:hover { background: var(--paper-deep); border-color: var(--moss); transform: translateX(5px); }
 .stat-card:hover::before { transform: scaleY(1); }
 .stat-label {
-  font-family: var(--font-pixel); font-size: 0.56rem;
+  font-family: var(--font-pixel); font-size: 0.75rem;
   color: var(--moss); letter-spacing: 0.25em;
 }
 .stat-value { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--ink); }
@@ -386,7 +386,7 @@ blockquote cite {
   50%       { box-shadow: 0 0 0 3px var(--paper-alt), 0 0 22px rgba(240,144,74,0.85), 0 0 36px rgba(200,96,58,0.25); }
 }
 .tl-date {
-  font-family: var(--font-pixel); font-size: 0.6rem;
+  font-family: var(--font-pixel); font-size: 0.82rem;
   color: var(--akache); letter-spacing: 0.2em; margin-bottom: 0.6rem;
 }
 .tl-title {
@@ -394,7 +394,7 @@ blockquote cite {
   color: var(--ink); margin-bottom: 0.3rem;
 }
 .tl-company {
-  font-family: var(--font-pixel); font-size: 0.6rem;
+  font-family: var(--font-pixel); font-size: 0.82rem;
   color: var(--akache-lt); letter-spacing: 0.2em; margin-bottom: 0.8rem;
 }
 .tl-desc { font-size: 0.95rem; color: var(--muted-text); line-height: 1.78; max-width: 560px; }
@@ -443,14 +443,14 @@ blockquote cite {
 .edu-card:hover::after { transform: scaleX(1); }
 .edu-badge {
   display: inline-block; align-self: flex-start;
-  font-family: var(--font-pixel); font-size: 0.56rem;
+  font-family: var(--font-pixel); font-size: 0.75rem;
   color: var(--moss); background: var(--moss-dim); padding: 0.3rem 0.6rem;
   letter-spacing: 0.15em; margin-bottom: 0.4rem;
 }
-.edu-year { font-family: var(--font-pixel); font-size: 0.56rem; color: var(--muted-text); letter-spacing: 0.2em; }
+.edu-year { font-family: var(--font-pixel); font-size: 0.75rem; color: var(--muted-text); letter-spacing: 0.2em; }
 .edu-card h3 { font-family: var(--font-serif); font-size: 1.2rem; font-weight: 600; color: var(--ink); margin-top: 0.2rem; }
 .edu-card p  { font-size: 0.9rem; color: var(--muted-text); }
-.edu-loc { font-family: var(--font-pixel); font-size: 0.52rem; color: var(--muted-text); letter-spacing: 0.15em; margin-top: 0.3rem; }
+.edu-loc { font-family: var(--font-pixel); font-size: 0.75rem; color: var(--muted-text); letter-spacing: 0.15em; margin-top: 0.3rem; }
 
 /* ─── Skills (淺色) — 天婦羅金光 ─── */
 #skills {
@@ -474,12 +474,12 @@ blockquote cite {
   box-shadow: 0 6px 20px rgba(26,20,16,0.08);
 }
 .skill-cat {
-  display: block; font-family: var(--font-pixel); font-size: 0.6rem;
+  display: block; font-family: var(--font-pixel); font-size: 0.82rem;
   color: var(--moss); letter-spacing: 0.25em; margin-bottom: 1.2rem;
 }
 .skill-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .chip {
-  font-family: var(--font-pixel); font-size: 0.52rem;
+  font-family: var(--font-pixel); font-size: 0.75rem;
   padding: 0.4rem 0.7rem; background: var(--paper-alt); border: 1px solid var(--muted-border);
   color: var(--ink-dim); letter-spacing: 0.1em;
   transition: border-color 0.2s, color 0.2s, background 0.2s;
@@ -544,7 +544,7 @@ blockquote cite {
   color: var(--snow);
 }
 .contact-sub {
-  font-family: var(--font-pixel); font-size: 0.65rem;
+  font-family: var(--font-pixel); font-size: 0.88rem;
   color: var(--dark-muted-text); letter-spacing: 0.25em; margin-bottom: 2.5rem;
 }
 .contact-email {
@@ -562,7 +562,7 @@ blockquote cite {
 
 .social-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.8rem; }
 .social-btn {
-  font-family: var(--font-pixel); font-size: 0.6rem;
+  font-family: var(--font-pixel); font-size: 0.82rem;
   color: var(--dark-muted-text); padding: 0.8rem 1.4rem;
   border: 1px solid var(--dark-muted); letter-spacing: 0.2em;
   transition: color 0.25s, border-color 0.25s, background 0.25s;
@@ -578,7 +578,7 @@ footer {
   align-items: center; flex-wrap: wrap; gap: 1rem;
 }
 .foot-l, .foot-r {
-  font-family: var(--font-pixel); font-size: 0.52rem;
+  font-family: var(--font-pixel); font-size: 0.75rem;
   color: var(--dark-muted-text); letter-spacing: 0.15em;
 }
 
