@@ -507,4 +507,20 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('panel-close')?.addEventListener('click', closePanel);
   document.getElementById('map-overlay')?.addEventListener('click', closePanel);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+
+  // Sync works-wrap top offset to actual nav height (nav height varies by viewport)
+  const nav  = document.getElementById('nav');
+  const wrap = document.querySelector('.works-wrap');
+  if (nav && wrap) {
+    function syncNavOffset() {
+      const h = nav.offsetHeight;
+      wrap.style.marginTop = h + 'px';
+      wrap.style.height    = 'calc(100svh - ' + h + 'px)';
+      // Keep panel-close below nav
+      const closeBtn = document.getElementById('panel-close');
+      if (closeBtn) closeBtn.style.top = (h + 8) + 'px';
+    }
+    syncNavOffset();
+    window.addEventListener('resize', syncNavOffset, { passive: true });
+  }
 });
