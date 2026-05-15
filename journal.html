@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-TW" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="廖洺玄的生活日記與照片記錄">
+  <title>日常 · Life — 廖洺玄</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+
+  <!-- Navigation -->
+  <nav id="nav">
+    <a class="nav-logo" href="index.html">Mike<span>廖洺玄</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html#about">ABOUT</a></li>
+      <li><a href="index.html#work">WORK</a></li>
+      <li><a href="index.html#education">SCHOOL</a></li>
+      <li><a href="index.html#skills">SKILLS</a></li>
+      <li><a href="journal.html" class="active">LIFE</a></li>
+      <li><a href="index.html#contact">CONTACT</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle day/night mode">◐ NGT</button>
+      <button class="nav-menu" id="nav-menu" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html#about" class="mm-link">ABOUT</a>
+    <a href="index.html#work" class="mm-link">WORK</a>
+    <a href="index.html#education" class="mm-link">SCHOOL</a>
+    <a href="index.html#skills" class="mm-link">SKILLS</a>
+    <a href="journal.html" class="mm-link">LIFE</a>
+    <a href="index.html#contact" class="mm-link">CONTACT</a>
+  </div>
+
+  <!-- Journal Hero -->
+  <section id="journal-hero">
+    <canvas id="journal-snow"></canvas>
+    <div class="journal-hero-content">
+      <p class="hero-eyebrow">日 常 · L I F E &nbsp; L O G</p>
+      <h1>Journal</h1>
+      <p class="journal-sub">記録する · 記錄生活</p>
+    </div>
+  </section>
+
+  <!-- Auth Bar (shown when logged in) -->
+  <div class="auth-bar" id="auth-bar" style="display:none;">
+    <span class="auth-label" id="auth-user-label"></span>
+    <button class="auth-new-btn" id="new-entry-btn">＋ 新增日記</button>
+    <button class="auth-signout-btn" id="signout-btn">登出</button>
+  </div>
+
+  <!-- Login hint (shown when logged out) -->
+  <div class="auth-login-hint" id="auth-login-hint" style="display:none;">
+    <button class="auth-login-btn" id="login-btn">管理員登入</button>
+  </div>
+
+  <!-- Filters -->
+  <div class="journal-filters">
+    <button class="filter-btn active" data-filter="all">ALL</button>
+    <button class="filter-btn" data-filter="diary">日 記</button>
+    <button class="filter-btn" data-filter="photo">写 真</button>
+  </div>
+
+  <!-- Entry Grid -->
+  <main id="journal-main">
+    <div class="entry-grid" id="entry-grid">
+      <div class="entry-empty"><p>読み込み中… · Loading</p></div>
+    </div>
+  </main>
+
+  <!-- Entry Modal (view) -->
+  <div class="entry-modal" id="entry-modal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header-row">
+        <div></div>
+        <div class="modal-actions" id="modal-actions"></div>
+        <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Edit/New Modal -->
+  <div class="entry-modal" id="edit-modal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" id="edit-backdrop"></div>
+    <div class="modal-content">
+      <div class="modal-header-row">
+        <h2 class="modal-title" id="edit-modal-title" style="font-size:1.1rem;">新增日記</h2>
+        <button class="modal-close" id="edit-close" aria-label="Close">✕</button>
+      </div>
+      <form id="entry-form" class="entry-form">
+        <div class="form-row">
+          <label class="form-label">類型</label>
+          <div class="form-radio-group">
+            <label class="form-radio"><input type="radio" name="type" value="diary" checked> 日記</label>
+            <label class="form-radio"><input type="radio" name="type" value="photo"> 寫真</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="f-date">日期</label>
+          <input class="form-input" type="date" id="f-date" name="date" required>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="f-title">標題</label>
+          <input class="form-input" type="text" id="f-title" name="title" required placeholder="日記標題">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="f-content">內容</label>
+          <textarea class="form-textarea" id="f-content" name="content" rows="6" placeholder="寫下今天..."></textarea>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="f-tags">標籤</label>
+          <input class="form-input" type="text" id="f-tags" name="tags" placeholder="巴黎, 旅行, 日常（逗號分隔）">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="f-images">圖片 URL</label>
+          <input class="form-input" type="text" id="f-images" name="images" placeholder="https://... （逗號分隔，可留空）">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="form-btn-cancel" id="form-cancel">取消</button>
+          <button type="submit" class="form-btn-submit" id="form-submit">儲存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="entry-modal" id="login-modal" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" id="login-backdrop"></div>
+    <div class="modal-content" style="max-width:420px;">
+      <div class="modal-header-row">
+        <h2 class="modal-title" style="font-size:1rem;">管理員登入</h2>
+        <button class="modal-close" id="login-close" aria-label="Close">✕</button>
+      </div>
+      <form id="login-form" class="entry-form">
+        <div class="form-row">
+          <label class="form-label" for="l-email">Email</label>
+          <input class="form-input" type="email" id="l-email" required placeholder="your@email.com">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="l-password">Password</label>
+          <input class="form-input" type="password" id="l-password" required placeholder="••••••••">
+        </div>
+        <p class="form-error" id="login-error"></p>
+        <div class="form-actions">
+          <button type="submit" class="form-btn-submit">登入</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <span class="foot-l">© 2025 Ming-Hsuan Liao · 廖洺玄</span>
+    <span class="foot-r">雪国 · 温泉 · 滑雪 · 爐端燒 · 天婦羅</span>
+  </footer>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-H8SCHM4MZK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-H8SCHM4MZK');
+  </script>
+
+  <!-- Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <script src="js/main.js"></script>
+  <script src="js/journal.js"></script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

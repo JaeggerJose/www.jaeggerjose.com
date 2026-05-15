@@ -4,6 +4,29 @@
 
 'use strict';
 
+/* ─── Day / Night Mode ─── */
+(function () {
+  const html = document.documentElement;
+  const saved = localStorage.getItem('theme') || 'light';
+  html.dataset.theme = saved;
+
+  function updateLabel(btn) {
+    if (!btn) return;
+    btn.textContent = html.dataset.theme === 'dark' ? '◑ DAY' : '◐ NGT';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('theme-toggle');
+    updateLabel(btn);
+    btn?.addEventListener('click', () => {
+      const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+      html.dataset.theme = next;
+      localStorage.setItem('theme', next);
+      updateLabel(btn);
+    });
+  });
+})();
+
 /* ─── Custom Cursor ─── */
 const cursor = document.getElementById('cursor');
 if (cursor) {
@@ -22,7 +45,7 @@ const sections = ['hero','about','work','education','skills','contact'].map(
   id => document.getElementById(id)
 ).filter(Boolean);
 
-const heroEl = document.getElementById('hero');
+const heroEl = document.getElementById('hero') || document.getElementById('journal-hero');
 
 function onScroll() {
   if (!nav) return;
