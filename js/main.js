@@ -74,7 +74,7 @@ function onScroll() {
   if (!nav) return;
   const heroBottom = heroEl ? heroEl.offsetTop + heroEl.offsetHeight : 0;
   const navH       = nav.offsetHeight;
-  const pastHero   = window.scrollY >= heroBottom - navH;
+  const pastHero   = heroEl != null && window.scrollY >= heroBottom - navH;
 
   // Dark nav over hero, light nav over content
   nav.classList.toggle('scrolled', window.scrollY > 60 && !pastHero);
