@@ -3,13 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="廖洺玄的生活日記與照片記錄">
+  <meta name="description" content="廖洺玄的生活日記與照片記錄 — 日常、旅行、攝影">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.jaeggerjose.com/journal.html">
+  <meta property="og:title" content="日常 · Life — 廖洺玄">
+  <meta property="og:description" content="廖洺玄的生活日記與照片記錄。日常、旅行、攝影。">
+  <meta property="og:locale" content="zh_TW">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@jaeggerjose">
+  <link rel="alternate" type="application/rss+xml" href="/api/feed" title="廖洺玄の日常">
   <title>日常 · Life — 廖洺玄</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css?v=3">
+  <link rel="stylesheet" href="css/style.css?v=4">
 </head>
 <body>
   <div class="cursor" id="cursor"></div>
@@ -70,6 +78,9 @@
     <button class="filter-btn active" data-filter="all">ALL</button>
     <button class="filter-btn" data-filter="diary">日 記</button>
     <button class="filter-btn" data-filter="photo">写 真</button>
+    <div class="filter-search">
+      <input type="search" id="journal-search" placeholder="搜 尋…" autocomplete="off" aria-label="搜尋日記">
+    </div>
   </div>
 
   <!-- Entry Grid -->

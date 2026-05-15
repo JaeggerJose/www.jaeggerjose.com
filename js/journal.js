@@ -12,6 +12,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 /* ─── State ─── */
 let allEntries   = [];
 let activeFilter = 'all';
+let searchTerm   = '';
 let currentUser  = null;
 let editingId    = null;
 
@@ -129,9 +130,15 @@ function buildCard(entry, index) {
 }
 
 function renderGrid() {
-  const filtered = activeFilter === 'all'
-    ? allEntries
-    : allEntries.filter(e => e.type === activeFilter);
+  const q = searchTerm.toLowerCase();
+  const filtered = allEntries.filter(e => {
+    const matchType = activeFilter === 'all' || e.type === activeFilter;
+    const matchSearch = !q
+      || (e.title  && e.title.toLowerCase().includes(q))
+      || (e.content && e.content.toLowerCase().includes(q))
+      || (e.tags   && e.tags.some(t => t.toLowerCase().includes(q)));
+    return matchType && matchSearch;
+  });
 
   entryGrid.textContent = '';
 
@@ -317,6 +324,15 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     renderGrid();
   });
 });
+
+/* ─── Search ─── */
+const searchInput = document.getElementById('journal-search');
+if (searchInput) {
+  searchInput.addEventListener('input', () => {
+    searchTerm = searchInput.value.trim();
+    renderGrid();
+  });
+}
 
 /* ─── Snow + Init ─── */
 createSnow('journal-snow', 80, 0.85);
