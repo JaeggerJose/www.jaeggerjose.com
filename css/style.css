@@ -609,8 +609,9 @@ footer {
   .skill-block[data-col="third"] { grid-column: span 1; }
 }
 @media (max-width: 860px) {
-  .nav-links { display: none; }
-  .nav-menu  { display: flex; }
+  .nav-links   { display: none; }
+  .nav-menu    { display: flex; }
+  #theme-toggle { display: none; }
 }
 @media (max-width: 680px) {
   .edu-grid  { grid-template-columns: 1fr; }
