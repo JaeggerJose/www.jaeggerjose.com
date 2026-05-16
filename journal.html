@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css?v=6">
+  <link rel="stylesheet" href="css/style.css?v=7">
   <!-- Speculation Rules -->
   <script type="speculationrules">
   {"prerender":[{"source":"list","urls":["index.html","works.html"]}],
@@ -146,9 +146,16 @@
           <label class="form-label" for="f-tags">標籤</label>
           <input class="form-input" type="text" id="f-tags" name="tags" placeholder="巴黎, 旅行, 日常（逗號分隔）">
         </div>
-        <div class="form-row">
-          <label class="form-label" for="f-images">圖片 URL</label>
-          <input class="form-input" type="text" id="f-images" name="images" placeholder="https://... （逗號分隔，可留空）">
+        <div class="form-row form-row--upload">
+          <label class="form-label">圖片</label>
+          <div class="img-upload-wrap">
+            <div class="img-preview-grid" id="img-preview-grid"></div>
+            <label class="img-pick-btn" for="f-image-files">
+              ＋ 選擇圖片
+              <input type="file" id="f-image-files" accept="image/jpeg,image/png,image/gif,image/webp,image/heic" multiple>
+            </label>
+            <p class="img-hint" id="img-upload-hint"></p>
+          </div>
         </div>
         <div class="form-actions">
           <button type="button" class="form-btn-cancel" id="form-cancel">取消</button>
@@ -202,7 +209,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
   <script src="js/main.js?v=3"></script>
-  <script src="js/journal.js?v=4"></script>
+  <script src="js/journal.js?v=5"></script>
   <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

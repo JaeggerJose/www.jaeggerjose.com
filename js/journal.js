@@ -322,11 +322,70 @@ function closeViewModal() {
 modalClose.addEventListener('click', closeViewModal);
 entryModal.querySelector('.modal-backdrop').addEventListener('click', closeViewModal);
 
+/* ─── Image Upload ─── */
+let uploadedImages = [];  /* array of public URLs for current edit session */
+
+const imgPreviewGrid  = document.getElementById('img-preview-grid');
+const imgUploadHint   = document.getElementById('img-upload-hint');
+const imgFileInput    = document.getElementById('f-image-files');
+
+function refreshImagePreviews() {
+  imgPreviewGrid.textContent = '';
+  uploadedImages.forEach((url, idx) => {
+    const wrap = el('div', 'img-preview-item');
+    const img  = document.createElement('img');
+    img.src = url; img.alt = '';
+    const rmBtn = el('button', 'img-remove', '✕');
+    rmBtn.type = 'button';
+    rmBtn.addEventListener('click', () => {
+      uploadedImages.splice(idx, 1);
+      refreshImagePreviews();
+    });
+    wrap.appendChild(img);
+    wrap.appendChild(rmBtn);
+    imgPreviewGrid.appendChild(wrap);
+  });
+}
+
+async function uploadImageFile(file) {
+  const ext  = file.name.split('.').pop().toLowerCase().replace('heic','heic');
+  const path = Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+  const { error } = await sb.storage.from('journal-images').upload(path, file, {
+    cacheControl: '31536000', upsert: false
+  });
+  if (error) throw error;
+  const { data } = sb.storage.from('journal-images').getPublicUrl(path);
+  return data.publicUrl;
+}
+
+if (imgFileInput) {
+  imgFileInput.addEventListener('change', async () => {
+    const files = [...imgFileInput.files];
+    if (!files.length) return;
+    imgUploadHint.textContent = '上傳中…';
+    formSubmit.disabled = true;
+    try {
+      for (const file of files) {
+        const url = await uploadImageFile(file);
+        uploadedImages.push(url);
+      }
+      refreshImagePreviews();
+      imgUploadHint.textContent = '';
+    } catch (err) {
+      imgUploadHint.textContent = '上傳失敗：' + err.message;
+    } finally {
+      formSubmit.disabled = false;
+      imgFileInput.value = '';
+    }
+  });
+}
+
 /* ─── Edit / New Modal ─── */
 function openEditModal(id) {
   editingId = id;
   editTitle.textContent = id ? '日記を編集' : '新増日記';
   entryForm.reset();
+  uploadedImages = [];
 
   if (id) {
     const e = allEntries.find(x => x.id === id);
@@ -334,13 +393,15 @@ function openEditModal(id) {
       entryForm.elements['type'].value    = e.type;
       entryForm.elements['date'].value    = e.date;
       entryForm.elements['title'].value   = e.title;
-      entryForm.elements['content'].value = e.content;
+      entryForm.elements['content'].value = e.content || '';
       entryForm.elements['tags'].value    = (e.tags || []).join(', ');
-      entryForm.elements['images'].value  = (e.images || []).join(', ');
+      uploadedImages = (e.images || []).filter(Boolean).slice();
     }
   } else {
     entryForm.elements['date'].value = new Date().toISOString().slice(0, 10);
   }
+  refreshImagePreviews();
+  imgUploadHint.textContent = '';
 
   editModal.classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -350,6 +411,7 @@ function closeEditModal() {
   editModal.classList.remove('open');
   document.body.style.overflow = '';
   editingId = null;
+  uploadedImages = [];
 }
 
 editClose.addEventListener('click', closeEditModal);
@@ -360,8 +422,8 @@ newEntryBtn.addEventListener('click', () => openEditModal(null));
 /* ─── Form submit ─── */
 entryForm.addEventListener('submit', async e => {
   e.preventDefault();
-  formSubmit.disabled     = true;
-  formSubmit.textContent  = '…';
+  formSubmit.disabled    = true;
+  formSubmit.textContent = '…';
 
   const fd = new FormData(entryForm);
   const payload = {
@@ -370,7 +432,7 @@ entryForm.addEventListener('submit', async e => {
     title:   (fd.get('title') || '').trim(),
     content: (fd.get('content') || '').trim(),
     tags:    (fd.get('tags') || '').split(',').map(t => t.trim()).filter(Boolean),
-    images:  (fd.get('images') || '').split(',').map(s => s.trim()).filter(Boolean),
+    images:  uploadedImages.filter(Boolean),
   };
 
   let error;

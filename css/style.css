@@ -1202,6 +1202,48 @@ body:has(#journal-hero) { background: #04060e; }
 .form-btn-submit:hover { background: var(--steam); color: #04060e; }
 .form-btn-submit:disabled { opacity: 0.4; pointer-events: none; }
 
+/* ── Image Upload ── */
+.form-row--upload .form-label { margin-bottom: 0.1rem; }
+.img-upload-wrap { display: flex; flex-direction: column; gap: 0.75rem; }
+.img-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 0.5rem;
+}
+.img-preview-item {
+  position: relative; border-radius: 0;
+  border: 1px solid rgba(80,120,200,0.2);
+  overflow: hidden; aspect-ratio: 1;
+}
+.img-preview-item img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.img-preview-item .img-remove {
+  position: absolute; top: 2px; right: 2px;
+  background: rgba(4,8,20,0.85); border: none;
+  color: rgba(220,232,255,0.8); font-size: 0.65rem;
+  width: 18px; height: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.img-preview-item .img-remove:hover { background: rgba(200,50,50,0.7); }
+.img-pick-btn {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: var(--font-pixel); font-size: 0.5rem;
+  letter-spacing: 0.1em; color: rgba(61,214,200,0.7);
+  border: 1px dashed rgba(61,214,200,0.3);
+  padding: 0.6rem 1rem; cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  width: fit-content;
+}
+.img-pick-btn:hover { border-color: rgba(61,214,200,0.6); color: var(--steam); }
+.img-pick-btn input[type="file"] { display: none; }
+.img-hint {
+  font-family: var(--font-pixel); font-size: 0.45rem;
+  color: rgba(94,122,170,0.5); letter-spacing: 0.08em;
+  min-height: 1em;
+}
+
 /* Login modal gets a blue accent instead of teal */
 #login-modal .modal-content { border-top-color: var(--pixel); }
 
