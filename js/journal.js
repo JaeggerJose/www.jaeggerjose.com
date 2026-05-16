@@ -197,6 +197,7 @@ function renderGrid() {
   });
 
   entryGrid.textContent = '';
+  entryGrid.classList.remove('entry-grid--editorial');
 
   if (!filtered.length) {
     const empty = el('div', 'entry-empty');
@@ -205,13 +206,66 @@ function renderGrid() {
     return;
   }
 
-  filtered.forEach((entry, i) => {
-    const card = buildCard(entry, i);
-    card.addEventListener('click', () => openViewModal(entry.id));
-    entryGrid.appendChild(card);
-    requestAnimationFrame(() => card.classList.add('visible'));
-  });
+  const useEditorial = window.innerWidth >= 900 && filtered.length >= 2;
+
+  if (useEditorial) {
+    entryGrid.classList.add('entry-grid--editorial');
+
+    /* Section label */
+    entryGrid.appendChild(el('div', 'editorial-section-label', '— 最 新 掲 載 —'));
+
+    /* Editorial row: featured (left) + compact stack (right) */
+    const editorial = document.createElement('div');
+    editorial.className = 'entry-editorial';
+
+    const featCard = buildCard(filtered[0], 0);
+    featCard.classList.add('entry-card--featured');
+    featCard.addEventListener('click', () => openViewModal(filtered[0].id));
+    editorial.appendChild(featCard);
+    requestAnimationFrame(() => featCard.classList.add('visible'));
+
+    /* Right column: up to 3 compact cards */
+    const rightStack = document.createElement('div');
+    rightStack.className = 'entry-right-stack';
+    filtered.slice(1, 4).forEach((entry, i) => {
+      const card = buildCard(entry, i + 1);
+      card.classList.add('entry-card--compact');
+      card.addEventListener('click', () => openViewModal(entry.id));
+      rightStack.appendChild(card);
+      requestAnimationFrame(() => card.classList.add('visible'));
+    });
+    editorial.appendChild(rightStack);
+    entryGrid.appendChild(editorial);
+
+    /* Rest grid: cards 5+ in 3-col layout */
+    if (filtered.length > 4) {
+      entryGrid.appendChild(el('div', 'editorial-divider'));
+      const rest = document.createElement('div');
+      rest.className = 'entry-grid-rest';
+      filtered.slice(4).forEach((entry, i) => {
+        const card = buildCard(entry, i + 4);
+        card.addEventListener('click', () => openViewModal(entry.id));
+        rest.appendChild(card);
+        requestAnimationFrame(() => card.classList.add('visible'));
+      });
+      entryGrid.appendChild(rest);
+    }
+  } else {
+    filtered.forEach((entry, i) => {
+      const card = buildCard(entry, i);
+      card.addEventListener('click', () => openViewModal(entry.id));
+      entryGrid.appendChild(card);
+      requestAnimationFrame(() => card.classList.add('visible'));
+    });
+  }
 }
+
+/* Re-render on resize (editorial layout is viewport-dependent) */
+let _resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(renderGrid, 160);
+}, { passive: true });
 
 /* ─── View Modal ─── */
 function openViewModal(id) {
