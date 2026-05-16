@@ -4,8 +4,29 @@
 
 'use strict';
 
-/* ─── Page Transitions ─── */
+/* ─── Page Transitions + Hover Prefetch ─── */
 (function () {
+  /* Hover prefetch: browser gets 150-300ms head start before click */
+  const prefetched = new Set();
+  document.addEventListener('mouseover', e => {
+    const a = e.target.closest('a[href]');
+    if (!a || a.target === '_blank') return;
+    const { href } = a;
+    if (!href || prefetched.has(href)) return;
+    try {
+      const u = new URL(href);
+      if (u.origin !== location.origin || u.pathname === location.pathname) return;
+    } catch { return; }
+    prefetched.add(href);
+    const link = document.createElement('link');
+    link.rel = 'prefetch'; link.href = href;
+    document.head.appendChild(link);
+  }, { passive: true });
+
+  /* CSS @view-transition handles animation in modern browsers.
+     Only apply JS opacity fallback for browsers without support. */
+  if ('startViewTransition' in document) return;
+
   document.addEventListener('click', e => {
     const a = e.target.closest('a[href]');
     if (!a) return;
@@ -18,7 +39,7 @@
     } catch { return; }
     e.preventDefault();
     document.body.style.opacity = '0';
-    setTimeout(() => { location.href = a.href; }, 310);
+    setTimeout(() => { location.href = a.href; }, 260);
   });
 })();
 

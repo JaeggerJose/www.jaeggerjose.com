@@ -20,7 +20,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="stylesheet" href="css/style.css?v=6">
+  <!-- Speculation Rules -->
+  <script type="speculationrules">
+  {"prerender":[{"source":"list","urls":["index.html","works.html"]}],
+   "prefetch": [{"source":"list","urls":["index.html","works.html"]}]}
+  </script>
 </head>
 <body>
   <div class="cursor" id="cursor"></div>
@@ -196,7 +201,7 @@
   <!-- Supabase client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
-  <script src="js/main.js?v=2"></script>
+  <script src="js/main.js?v=3"></script>
   <script src="js/journal.js?v=4"></script>
   <script defer src="/_vercel/insights/script.js"></script>
 </body>

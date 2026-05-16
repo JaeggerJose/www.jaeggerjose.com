@@ -55,6 +55,23 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 
+/* ── View Transitions: cross-page navigation ── */
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: vt-out 0.16s ease; }
+::view-transition-new(root) { animation: vt-in  0.22s ease; }
+@keyframes vt-out {
+  from { opacity: 1; transform: translateY(0);    }
+  to   { opacity: 0; transform: translateY(-8px); }
+}
+@keyframes vt-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+/* Suppress body fade-in when VT handles it */
+@supports (view-transition-name: none) {
+  body { animation: none !important; }
+}
+
 @keyframes page-fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
