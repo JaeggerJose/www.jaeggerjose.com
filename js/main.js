@@ -137,7 +137,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 });
 
 /* ─── Pixel Snow Canvas ─── */
-function createSnow(canvasId, density, speed = 1) {
+function createSnow(canvasId, density, speed = 1, maxAlpha = 0.55) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -163,7 +163,7 @@ function createSnow(canvasId, density, speed = 1) {
       vx:  (Math.random() - 0.5) * 0.18,
       drift:      Math.random() * Math.PI * 2,
       driftSpeed: 0.006 + Math.random() * 0.01,
-      alpha: 0.18 + Math.random() * 0.55,
+      alpha: 0.08 + Math.random() * maxAlpha,
     });
   }
 
@@ -190,6 +190,7 @@ function createSnow(canvasId, density, speed = 1) {
 }
 
 createSnow('snow',         130, 1);
+createSnow('global-snow',  50,  0.5,  0.20);   /* 全頁輕雪：低透明度，不擋內容 */
 createSnow('journal-snow', 55,  0.65);
 createSnow('contact-snow', 60,  0.7);
 

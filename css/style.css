@@ -1,6 +1,7 @@
 /* ============================================================
    style.css — 廖明軒 · Ming-Hsuan Liao Personal Site
-   Theme: Yukiguni · 和紙 × 深夜雪景 × Pixel Art
+   Theme: Yukiguni · 和紙 × 深夜雪景 × Pixel Art × 印刷點陣
+   v9 — Halftone System
    ============================================================ */
 
 /* ─── Variables ─── */
@@ -49,6 +50,13 @@
   --font-body:  'Noto Sans', system-ui, sans-serif;
   --pad-x: clamp(1.5rem, 5vw, 6rem);
   --pad-y: clamp(5rem, 10vw, 9rem);
+
+  /* ── Halftone System（印刷點陣 — 模擬和紙油墨擴散）── */
+  --ht-light-dot:  rgba(74, 124, 111, 0.13);   /* 苔綠主點 — 淺色段落 */
+  --ht-light-dot2: rgba(200, 96, 58, 0.065);   /* 赤茶副點 — 淺色段落 */
+  --ht-amber-dot:  rgba(245, 196, 96, 0.11);   /* 餘燼金點 — Skills */
+  --ht-dark-dot:   rgba(91, 142, 214, 0.06);   /* 像素藍點 — 暗色段落 */
+  --ht-steam-dot:  rgba(61, 214, 200, 0.05);   /* 蒸氣點 — Contact */
 }
 
 /* ─── Reset ─── */
@@ -100,6 +108,13 @@ body::after {
   );
   pointer-events: none;
   z-index: 9998;
+}
+
+/* ─── Global Snow Canvas（全頁飄雪）─── */
+.global-snow {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 9996;
 }
 
 /* ─── Custom Cursor (mix-blend-mode 自動反色) ─── */
@@ -199,11 +214,15 @@ body::after {
 }
 html[data-theme="dark"] .theme-toggle-mm { border-color: var(--dark-muted); color: var(--snow-dim); }
 
-/* ─── Hero (深色保留) ─── */
+/* ─── Hero (深色保留 + 像素藍點陣) ─── */
 #hero {
   position: relative; height: 100svh; min-height: 680px;
   display: flex; align-items: center; justify-content: center; overflow: hidden;
-  background: radial-gradient(ellipse 120% 80% at 50% 20%, #0d2045 0%, var(--void) 65%);
+  background-color: var(--void);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% 20%, #0d2045 0%, transparent 65%),
+    radial-gradient(circle, var(--ht-dark-dot) 1.5px, transparent 1.5px);
+  background-size: auto, 40px 40px;
 }
 #snow     { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
 #mountains {
@@ -301,13 +320,15 @@ section { padding: var(--pad-y) var(--pad-x); }
 }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
-/* ─── About (淺色) — 和紙點陣底紋・雪国 ─── */
+/* ─── About (淺色) — 和紙點陣底紋・雪国・印刷 ─── */
 #about {
-  background: var(--paper);
+  background-color: var(--paper);
   border-bottom: 1px solid var(--muted-border);
   background-image:
-    radial-gradient(circle, rgba(74,124,111,0.07) 1.5px, transparent 1.5px);
-  background-size: 28px 28px;
+    radial-gradient(circle, var(--ht-light-dot) 1.5px, transparent 1.5px),
+    radial-gradient(circle, var(--ht-light-dot2) 1px, transparent 1px);
+  background-size: 24px 24px, 40px 40px;
+  background-position: 0 0, 12px 20px;
 }
 .about-grid {
   display: grid;
@@ -356,7 +377,12 @@ blockquote cite {
   content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
   background: var(--moss); transform: scaleY(0); transform-origin: bottom; transition: transform 0.3s;
 }
-.stat-card:hover { background: var(--paper-deep); border-color: var(--moss); transform: translateX(5px); }
+.stat-card:hover {
+  background-color: var(--paper-deep);
+  background-image: radial-gradient(circle, var(--ht-light-dot) 1px, transparent 1px);
+  background-size: 16px 16px;
+  border-color: var(--moss); transform: translateX(5px);
+}
 .stat-card:hover::before { transform: scaleY(1); }
 .stat-label {
   font-family: var(--font-pixel); font-size: 0.75rem;
@@ -365,9 +391,11 @@ blockquote cite {
 .stat-value { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--ink); }
 .stat-sub { font-size: 0.85rem; color: var(--muted-text); }
 
-/* ─── Work / Timeline (淺色 + 火感裝飾) ─── */
+/* ─── Work / Timeline (淺色 + 火感裝飾 + 赤茶點陣) ─── */
 #work {
-  background: var(--paper-alt);
+  background-color: var(--paper-alt);
+  background-image: radial-gradient(circle, var(--ht-light-dot2) 1.5px, transparent 1.5px);
+  background-size: 28px 28px;
   position: relative; overflow: hidden;
   border-bottom: 1px solid rgba(200, 96, 58, 0.15);
 }
@@ -411,9 +439,11 @@ blockquote cite {
 }
 .tl-desc { font-size: 0.95rem; color: var(--muted-text); line-height: 1.78; max-width: 560px; }
 
-/* ─── Education (淺色) — 滑雪斜坡紋 ─── */
+/* ─── Education (淺色) — 滑雪斜坡紋 + 細密點陣 ─── */
 #education {
-  background: var(--paper);
+  background-color: var(--paper);
+  background-image: radial-gradient(circle, var(--ht-light-dot) 1px, transparent 1px);
+  background-size: 20px 20px;
   border-bottom: 1px solid var(--muted-border);
   position: relative; overflow: hidden;
 }
@@ -448,7 +478,10 @@ blockquote cite {
   transform: scaleX(0); transform-origin: left; transition: transform 0.35s ease;
 }
 .edu-card:hover {
-  border-color: var(--moss); background: var(--paper-deep);
+  border-color: var(--moss);
+  background-color: var(--paper-deep);
+  background-image: radial-gradient(circle, var(--ht-light-dot) 1px, transparent 1px);
+  background-size: 16px 16px;
   transform: translateY(-5px);
   box-shadow: 0 12px 30px rgba(26, 20, 16, 0.1), 0 0 20px var(--moss-glow);
 }
@@ -464,9 +497,11 @@ blockquote cite {
 .edu-card p  { font-size: 0.9rem; color: var(--muted-text); }
 .edu-loc { font-family: var(--font-pixel); font-size: 0.75rem; color: var(--muted-text); letter-spacing: 0.15em; margin-top: 0.3rem; }
 
-/* ─── Skills (淺色) — 天婦羅金光 ─── */
+/* ─── Skills (淺色) — 天婦羅金光 + 暖金點陣 ─── */
 #skills {
-  background: var(--paper-alt);
+  background-color: var(--paper-alt);
+  background-image: radial-gradient(circle, var(--ht-amber-dot) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
   border-bottom: 1px solid rgba(74, 124, 111, 0.15);
 }
 .skill-block[data-col="wide"] {
@@ -482,7 +517,10 @@ blockquote cite {
   padding: 1.75rem; transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
 }
 .skill-block:hover {
-  border-color: var(--moss); background: var(--paper-deep);
+  border-color: var(--moss);
+  background-color: var(--paper-deep);
+  background-image: radial-gradient(circle, var(--ht-light-dot) 1px, transparent 1px);
+  background-size: 16px 16px;
   box-shadow: 0 6px 20px rgba(26,20,16,0.08);
 }
 .skill-cat {
@@ -498,9 +536,11 @@ blockquote cite {
 }
 .chip:hover { border-color: var(--moss); color: var(--moss); background: var(--moss-dim); }
 
-/* ─── Contact (深色保留) — 温泉漣漪 ─── */
+/* ─── Contact (深色保留) — 温泉漣漪 + 蒸氣點陣 ─── */
 #contact {
-  background: var(--void);
+  background-color: var(--void);
+  background-image: radial-gradient(circle, var(--ht-steam-dot) 1.5px, transparent 1.5px);
+  background-size: 36px 36px;
   text-align: center; position: relative; overflow: hidden;
 }
 #contact::before,
@@ -657,6 +697,10 @@ html[data-theme="dark"] {
   --akache:       #e07858;
   --akache-dim:   rgba(224, 120, 88, 0.15);
   --akache-lt:    #e89878;
+  /* halftone — 暗色模式下調低不透明度 */
+  --ht-light-dot:  rgba(86, 196, 170, 0.10);
+  --ht-light-dot2: rgba(224, 120, 88, 0.06);
+  --ht-amber-dot:  rgba(245, 196, 96, 0.08);
 }
 html[data-theme="dark"] #nav.on-light {
   background: rgba(10, 16, 32, 0.92);
@@ -685,9 +729,12 @@ body:has(#journal-hero) { background: #04060e; }
 /* ── Hero ── */
 #journal-hero {
   position: relative; height: 62vh; min-height: 420px;
-  background:
-    radial-gradient(ellipse 200% 120% at 50% -10%, #0e2858 0%, #04060e 60%),
-    linear-gradient(180deg, #060b1c 0%, #04060e 100%);
+  background-color: #04060e;
+  background-image:
+    radial-gradient(ellipse 200% 120% at 50% -10%, #0e2858 0%, transparent 60%),
+    linear-gradient(180deg, #060b1c 0%, transparent 100%),
+    radial-gradient(circle, var(--ht-dark-dot) 1.5px, transparent 1.5px);
+  background-size: auto, auto, 40px 40px;
   display: flex; align-items: center; justify-content: center; overflow: hidden;
 }
 
@@ -805,7 +852,9 @@ body:has(#journal-hero) { background: #04060e; }
 
 /* ── Main ── */
 #journal-main {
-  background: #04060e;
+  background-color: #04060e;
+  background-image: radial-gradient(circle, var(--ht-steam-dot) 1.5px, transparent 1.5px);
+  background-size: 36px 36px;
   padding: clamp(3rem, 6vw, 6rem) var(--pad-x); min-height: 60vh;
 }
 /* ── Entry Grid ── */

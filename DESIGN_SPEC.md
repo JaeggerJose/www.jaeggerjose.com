@@ -1,23 +1,25 @@
 # Design Spec — jaeggerjose.com
 > 廖洺玄 · Ming-Hsuan Liao Personal Portfolio
-> 最後更新：2026-05-16
+> 最後更新：2026-05-17
 
 ---
 
 ## 1. 主題概念
 
-**雪国 × Yukiguni** — 川端康成《雪国》的深夜山間意象：和紙質感的淺色日間版、深海夜空的暗色英雄區段、像素雪花動態。
+**雪国 × Yukiguni × 印刷所** — 川端康成《雪国》的深夜山間意象，疊加 70 年代 *Asahi Camera* 雜誌版式的油墨印刷點陣（halftone）。像一本老印刷廠在雪夜排版的山岳攝影集。
 
-三個視覺層次共存：
-1. **明亮段落**（About / Work / Education / Skills / Contact）— 和紙米色底，苔綠 × 赤茶 accent
-2. **暗色英雄段落**（Hero / Journal Hero / Works Map）— 深海藍黑底，雪白 × steam 藍綠 accent
-3. **日夜模式切換**（`data-theme="dark"`）— 全域顏色翻轉，暗色模式下和紙段落改為深海藍系
+四個視覺層次共存：
+1. **明亮段落**（About / Work / Education / Skills）— 和紙米色底，苔綠 × 赤茶 accent，雙色 halftone 點陣
+2. **暗色英雄段落**（Hero / Journal Hero / Works Map）— 深海藍黑底，雪白 × steam 藍綠 accent，像素藍稀疏點陣
+3. **日夜模式切換**（`data-theme="dark"`）— 全域顏色翻轉，暗色模式下和紙段落改為深海藍系，halftone token 同步切換
+4. **互動點陣**（card hover）— 懸停時顯現細密 16px 點陣，強化印刷翻頁手感
 
 ---
 
 ## 2. Design Tokens（CSS Variables）
 
 ### 2.1 淺色模式（`:root`）
+
 
 | Token | Value | 用途 |
 |-------|-------|------|
@@ -187,7 +189,8 @@ hover a/button 時放大 + 邊框變色
 
 | 動畫 | 實作 | 詳情 |
 |---|---|---|
-| 雪花 | Canvas `createSnow(canvasId, count, opacity)` | Hero: 130 顆，Journal: 55 顆，Contact: 60 顆 |
+| 全頁雪 | Canvas `#global-snow`（`position: fixed; z-index: 9996`） | index.html 專屬：50 顆，speed 0.5，maxAlpha 0.20（不遮文字） |
+| 雪花 | Canvas `createSnow(canvasId, density, speed, maxAlpha)` | Hero: 130/1.0，Journal: 55/0.65，Contact: 60/0.7 |
 | 頁面切換 | CSS `@view-transition { navigation: auto; }` | out: fade+translateY(-8px) 0.16s，in: fade+translateY(8px) 0.22s |
 | Hover Prefetch | JS `mouseover` → `<link rel=prefetch>` | 同源頁面預讀，避免重複 |
 | Speculation Rules | `<script type="speculationrules">` | 各頁面預 render 其他兩頁 |
@@ -269,7 +272,51 @@ www.jaeggerjose.com/
 
 | 檔案 | 目前版本 |
 |---|---|
-| css/style.css | v8 |
-| js/main.js | v4 |
+| css/style.css | v9 |
+| js/main.js | v5 |
 | js/journal.js | v5 |
 | js/works.js | v4 |
+
+---
+
+## 13. Halftone System（印刷點陣）
+
+### 13.1 概念
+
+Halftone 疊加於雪国底層，模擬印刷油墨在和紙上的擴散感——像 70 年代 *Asahi Camera* 雜誌報道《雪国》的封面版式。雙層偏移點陣（CMYK 靈感）讓淺色段落呈現真正的活版印刷深度。
+
+### 13.2 Tokens
+
+| Token | Value（淺色模式） | 用途 |
+|-------|-------|------|
+| `--ht-light-dot` | `rgba(74,124,111,0.13)` | 苔綠主點 — 淺色段落 |
+| `--ht-light-dot2` | `rgba(200,96,58,0.065)` | 赤茶副點 — 淺色段落（偏移） |
+| `--ht-amber-dot` | `rgba(245,196,96,0.11)` | 餘燼金點 — Skills |
+| `--ht-dark-dot` | `rgba(91,142,214,0.06)` | 像素藍點 — 暗色段落 |
+| `--ht-steam-dot` | `rgba(61,214,200,0.05)` | 蒸氣點 — Contact |
+
+暗色模式自動切換：`--ht-light-dot → rgba(86,196,170,0.10)`、`--ht-light-dot2 → rgba(224,120,88,0.06)`、`--ht-amber-dot → rgba(245,196,96,0.08)`
+
+### 13.3 Section 對應
+
+| Section | 點陣大小 | 層數 | 配色 |
+|---------|---------|------|------|
+| About | 24px + 40px offset(12px,20px) | 雙層 | moss + akache |
+| Work | 28px | 單層 | akache |
+| Education | 20px（細密） | 單層 | moss |
+| Skills | 32px | 單層 | ember 暖金 |
+| Hero | 40px（稀疏大粒） | 疊於天空漸層 | pixel-blue |
+| Contact | 36px | 單層 | steam |
+
+### 13.4 互動 Halftone
+
+Card hover 時顯現細密 16px 苔綠點陣，增加懸停時的印刷翻頁手感。
+適用元件：`.stat-card:hover`、`.edu-card:hover`、`.skill-block:hover`
+
+### 13.5 Journal / Works 頁 Halftone
+
+| 元素 | 點陣 | 備註 |
+|------|------|------|
+| `#journal-hero` | 40px pixel-blue | 疊於 radial-gradient，`::before`/`::after` 保留給邊緣光線 |
+| `#journal-main` | 36px steam | 深暗底色的蒸氣點陣 |
+| `.project-panel`（works.html） | 32px pixel-blue | 因 canvas 遮蓋整頁，halftone 僅加在側邊 panel |
