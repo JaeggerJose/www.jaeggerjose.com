@@ -155,12 +155,164 @@ gridEl.addEventListener('click', async (e) => {
   const actBtn = e.target.closest('.block-actions button');
   if (actBtn) {
     e.stopPropagation();
-    return; // edit/del handled later
+    const id = actBtn.dataset.id;
+    const action = actBtn.dataset.action;
+    const b = currentBlocks.find(x => x.id === id);
+    if (!b) return;
+    if (action === 'del') {
+      if (!confirm(`Delete this ${b.type}?`)) return;
+      if (b.type === 'image' && b.image_path) {
+        await sb.storage.from('garden-images').remove([b.image_path]);
+      }
+      const { error } = await sb.from('garden_blocks').delete().eq('id', id);
+      if (error) { alert('delete failed: ' + error.message); return; }
+      loadChannel();
+    } else if (action === 'edit') {
+      blockForm.reset();
+      blockForm.dataset.editId = b.id;
+      document.getElementById('block-form-title').textContent = 'Edit Block';
+      setBlockFormType(b.type);
+      blockForm.querySelector(`input[name="type"][value="${b.type}"]`).checked = true;
+      blockForm.title.value    = b.title || '';
+      blockForm.body.value     = b.body || '';
+      blockForm.tags.value     = (b.tags || []).join(', ');
+      blockForm.position.value = b.position || 0;
+      if (b.type === 'link') {
+        blockForm.url.value      = b.url || '';
+        blockForm.og_image.value = b.og_image || '';
+      }
+      blockFormModal.showModal();
+    }
+    return;
   }
   const card = e.target.closest('.garden-block-card');
   if (!card) return;
   const b = currentBlocks.find(x => x.id === card.dataset.id);
   if (b) openBlockModal(b);
+});
+
+// ----- Admin auth -----
+const authBar     = document.getElementById('auth-bar');
+const authTrigger = document.getElementById('auth-trigger');
+const loginModal  = document.getElementById('login-modal');
+const loginForm   = document.getElementById('login-form');
+const signoutBtn  = document.getElementById('signout-btn');
+const authUser    = document.getElementById('auth-user');
+
+authTrigger.addEventListener('click', () => {
+  if (isAdmin) authBar.style.display = 'flex';
+  else loginModal.showModal();
+});
+loginForm.addEventListener('submit', async (e) => {
+  const fd = new FormData(loginForm);
+  const { error } = await sb.auth.signInWithPassword({
+    email: fd.get('email'), password: fd.get('password'),
+  });
+  if (error) { alert('Login failed: ' + error.message); e.preventDefault(); }
+});
+signoutBtn.addEventListener('click', async () => {
+  await sb.auth.signOut();
+  authBar.style.display = 'none';
+});
+sb.auth.onAuthStateChange((_evt, session) => {
+  isAdmin = !!session;
+  document.body.classList.toggle('is-admin', !!session);
+  if (session) { authBar.style.display = 'flex'; authUser.textContent = session.user.email; }
+  else authBar.style.display = 'none';
+  loadChannel();
+});
+
+// ----- Block form: type toggle -----
+const blockFormModal = document.getElementById('block-form-modal');
+const blockForm      = document.getElementById('block-form');
+const newBlockBtn    = document.getElementById('new-block-btn');
+
+function setBlockFormType(type) {
+  blockForm.querySelectorAll('[data-type-field]').forEach(el => {
+    el.style.display = (el.dataset.typeField === type) ? '' : 'none';
+  });
+}
+blockForm.addEventListener('change', (e) => {
+  if (e.target.name === 'type') setBlockFormType(e.target.value);
+});
+
+newBlockBtn.addEventListener('click', () => {
+  blockForm.reset();
+  setBlockFormType('link');
+  blockForm.dataset.editId = '';
+  document.getElementById('block-form-title').textContent = 'New Block';
+  blockFormModal.showModal();
+});
+
+document.getElementById('og-fetch-btn').addEventListener('click', async () => {
+  const target = blockForm.url.value.trim();
+  if (!/^https:\/\//i.test(target)) { alert('URL must start with https://'); return; }
+  const btn = document.getElementById('og-fetch-btn');
+  btn.disabled = true; btn.textContent = '...';
+  try {
+    const res = await fetch(`/api/og?url=${encodeURIComponent(target)}`);
+    const j = await res.json();
+    if (!j.ok) { alert('og failed: ' + j.error); return; }
+    if (j.title && !blockForm.title.value) blockForm.title.value = j.title;
+    if (j.description && !blockForm.body.value) blockForm.body.value = j.description;
+    if (j.image) blockForm.og_image.value = j.image;
+  } catch (err) {
+    alert('og fetch error: ' + err.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '→ Fetch';
+  }
+});
+
+blockForm.addEventListener('submit', async (e) => {
+  if (e.submitter && e.submitter.value === 'cancel') return;
+  if (!currentChannel) { e.preventDefault(); return; }
+
+  const fd = new FormData(blockForm);
+  const type = fd.get('type');
+  const tags = String(fd.get('tags') || '').split(',').map(t => t.trim()).filter(Boolean);
+
+  const payload = {
+    channel_id: currentChannel.id,
+    type,
+    title:    fd.get('title') || null,
+    body:     fd.get('body') || null,
+    tags,
+    position: Number(fd.get('position') || 0),
+    url:      type === 'link'  ? (fd.get('url') || null) : null,
+    og_image: type === 'link'  ? (fd.get('og_image') || null) : null,
+  };
+
+  if (type === 'image') {
+    const file = fd.get('image_file');
+    if (!file || file.size === 0) {
+      if (!blockForm.dataset.editId) {
+        alert('Please choose an image file');
+        e.preventDefault();
+        return;
+      }
+    } else {
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const path = `${currentChannel.slug}/${Date.now()}_${safeName}`;
+      const { error: upErr } = await sb.storage.from('garden-images')
+        .upload(path, file, { cacheControl: '31536000', upsert: false });
+      if (upErr) { alert('upload failed: ' + upErr.message); e.preventDefault(); return; }
+      payload.image_path = path;
+    }
+  }
+
+  if (type === 'note' && !payload.body) {
+    alert('Note requires body'); e.preventDefault(); return;
+  }
+
+  const editId = blockForm.dataset.editId;
+  const result = editId
+    ? await sb.from('garden_blocks').update(payload).eq('id', editId)
+    : await sb.from('garden_blocks').insert(payload);
+  if (result.error) { alert('save failed: ' + result.error.message); e.preventDefault(); return; }
+
+  blockForm.reset();
+  blockForm.dataset.editId = '';
+  loadChannel();
 });
 
 loadChannel();
