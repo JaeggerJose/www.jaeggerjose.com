@@ -58,7 +58,10 @@ async function fetchWithLimits(url, redirectsLeft = MAX_REDIRECTS) {
     if (redirectsLeft <= 0) throw new Error('too_many_redirects');
     const loc = res.headers.get('location');
     if (!loc) throw new Error('redirect_no_location');
-    return fetchWithLimits(new URL(loc, url).toString(), redirectsLeft - 1);
+    const next = new URL(loc, url);
+    next.username = '';
+    next.password = '';
+    return fetchWithLimits(next.toString(), redirectsLeft - 1);
   }
   if (!res.ok) throw new Error('fetch_failed_' + res.status);
 
@@ -73,7 +76,7 @@ async function fetchWithLimits(url, redirectsLeft = MAX_REDIRECTS) {
     chunks.push(value);
   }
   const buf = Buffer.concat(chunks.map(c => Buffer.from(c)));
-  return { url, html: buf.toString('utf-8', 0, Math.min(buf.length, MAX_BYTES)) };
+  return { url, html: buf.toString('utf-8') };
 }
 
 function decodeHtml(s) {
