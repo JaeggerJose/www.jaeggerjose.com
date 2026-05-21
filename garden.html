@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GARDEN — Jaegger Jose</title>
+  <meta name="description" content="A place where I keep links, images, and notes." />
+
+  <link rel="icon" href="favicon.svg" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=9">
+  <link rel="stylesheet" href="css/garden.css?v=1">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-H8SCHM4MZK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-H8SCHM4MZK');
+  </script>
+</head>
+<body class="page-garden">
+
+  <header class="site-header">
+    <a href="/" class="brand">JaeggerJose</a>
+    <nav class="site-nav">
+      <ul>
+        <li><a href="/#about">ABOUT</a></li>
+        <li><a href="journal.html">LIFE</a></li>
+        <li><a href="works.html">PROJECTS</a></li>
+        <li><a href="garden.html" aria-current="page">GARDEN</a></li>
+        <li><a href="/#contact">CONTACT</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="garden-main">
+    <section class="garden-hero">
+      <h1 class="garden-title">GARDEN</h1>
+      <p class="garden-subtitle">a place where i keep things</p>
+    </section>
+    <section class="garden-channels" id="channels-list" aria-busy="true">
+      <p class="garden-empty">loading…</p>
+    </section>
+  </main>
+
+  <div class="auth-bar" id="auth-bar" style="display:none;">
+    <span id="auth-user"></span>
+    <button id="new-channel-btn">+ NEW CHANNEL</button>
+    <button id="signout-btn">SIGN OUT</button>
+  </div>
+  <button class="auth-trigger" id="auth-trigger" aria-label="admin login">·</button>
+
+  <dialog id="channel-modal" class="garden-modal">
+    <form method="dialog" id="channel-form">
+      <h2>New Channel</h2>
+      <label>Title <input name="title" required></label>
+      <label>Slug  <input name="slug" required pattern="[a-z0-9-]+"></label>
+      <label>Summary <textarea name="summary" rows="3"></textarea></label>
+      <label>Visibility
+        <select name="visibility">
+          <option value="public" selected>Public</option>
+          <option value="private">Private</option>
+        </select>
+      </label>
+      <label>Position <input name="position" type="number" value="0"></label>
+      <div class="garden-modal-actions">
+        <button value="cancel" type="reset">Cancel</button>
+        <button value="confirm" type="submit">Create</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="login-modal" class="garden-modal">
+    <form method="dialog" id="login-form">
+      <h2>Admin Login</h2>
+      <label>Email <input name="email" type="email" required></label>
+      <label>Password <input name="password" type="password" required></label>
+      <div class="garden-modal-actions">
+        <button value="cancel" type="reset">Cancel</button>
+        <button value="confirm" type="submit">Sign in</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/main.js?v=5"></script>
+  <script src="js/garden.js?v=1"></script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
