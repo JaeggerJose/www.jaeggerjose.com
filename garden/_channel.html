@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Channel — Garden — Jaegger Jose</title>
+  <link rel="icon" href="/favicon.svg" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css?v=9">
+  <link rel="stylesheet" href="/css/garden.css?v=1">
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-H8SCHM4MZK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-H8SCHM4MZK');
+  </script>
+</head>
+<body class="page-garden">
+
+  <header class="site-header">
+    <a href="/" class="brand">JaeggerJose</a>
+    <nav class="site-nav">
+      <ul>
+        <li><a href="/#about">ABOUT</a></li>
+        <li><a href="/journal.html">LIFE</a></li>
+        <li><a href="/works.html">PROJECTS</a></li>
+        <li><a href="/garden.html" aria-current="page">GARDEN</a></li>
+        <li><a href="/#contact">CONTACT</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="garden-main">
+    <nav class="channel-breadcrumb">
+      <a href="/garden/">← GARDEN</a>
+      <span> / </span>
+      <span id="channel-name">…</span>
+    </nav>
+
+    <section class="garden-hero garden-channel-hero">
+      <h1 class="garden-title" id="channel-title">…</h1>
+      <p class="garden-subtitle" id="channel-summary"></p>
+    </section>
+
+    <section class="garden-block-grid" id="block-grid" aria-busy="true">
+      <p class="garden-empty">loading…</p>
+    </section>
+
+    <section class="garden-channel-tags" id="channel-tags" hidden>
+      <h2>Tags in this channel</h2>
+      <div id="tag-cloud"></div>
+    </section>
+  </main>
+
+  <dialog id="block-modal" class="garden-modal garden-block-modal">
+    <button class="modal-close" aria-label="close">×</button>
+    <div id="block-modal-body"></div>
+  </dialog>
+
+  <dialog id="block-form-modal" class="garden-modal">
+    <form method="dialog" id="block-form">
+      <h2 id="block-form-title">New Block</h2>
+      <fieldset>
+        <legend>Type</legend>
+        <label><input type="radio" name="type" value="link" checked> Link</label>
+        <label><input type="radio" name="type" value="image"> Image</label>
+        <label><input type="radio" name="type" value="note"> Note</label>
+      </fieldset>
+
+      <div data-type-field="link">
+        <label>URL
+          <div style="display:flex; gap:0.4rem;">
+            <input name="url" type="url" placeholder="https://...">
+            <button type="button" id="og-fetch-btn">→ Fetch</button>
+          </div>
+        </label>
+        <label>OG Image URL
+          <input name="og_image" type="url" placeholder="auto-filled">
+        </label>
+      </div>
+
+      <div data-type-field="image">
+        <label>Image File
+          <input name="image_file" type="file" accept="image/*">
+        </label>
+      </div>
+
+      <label>Title <input name="title"></label>
+      <label>Body / Comment <textarea name="body" rows="3"></textarea></label>
+      <label>Tags (comma-separated)
+        <input name="tags" placeholder="typography, print">
+      </label>
+      <label>Position <input name="position" type="number" value="0"></label>
+
+      <div class="garden-modal-actions">
+        <button value="cancel" type="reset">Cancel</button>
+        <button value="confirm" type="submit">Publish</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="auth-bar" id="auth-bar" style="display:none;">
+    <span id="auth-user"></span>
+    <button id="new-block-btn">+ NEW BLOCK</button>
+    <button id="signout-btn">SIGN OUT</button>
+  </div>
+  <button class="auth-trigger" id="auth-trigger" aria-label="admin login">·</button>
+
+  <dialog id="login-modal" class="garden-modal">
+    <form method="dialog" id="login-form">
+      <h2>Admin Login</h2>
+      <label>Email <input name="email" type="email" required></label>
+      <label>Password <input name="password" type="password" required></label>
+      <div class="garden-modal-actions">
+        <button value="cancel" type="reset">Cancel</button>
+        <button value="confirm" type="submit">Sign in</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="/js/main.js?v=5"></script>
+  <script src="/js/garden-channel.js?v=1"></script>
+  <script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>

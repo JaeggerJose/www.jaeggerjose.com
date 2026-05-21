@@ -33,5 +33,9 @@
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     }
+  ],
+  "rewrites": [
+    { "source": "/garden/:slug", "destination": "/garden/_channel.html" },
+    { "source": "/garden/:slug/", "destination": "/garden/_channel.html" }
   ]
 }
