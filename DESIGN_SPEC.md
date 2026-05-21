@@ -320,3 +320,27 @@ Card hover 時顯現細密 16px 苔綠點陣，增加懸停時的印刷翻頁手
 | `#journal-hero` | 40px pixel-blue | 疊於 radial-gradient，`::before`/`::after` 保留給邊緣光線 |
 | `#journal-main` | 36px steam | 深暗底色的蒸氣點陣 |
 | `.project-panel`（works.html） | 32px pixel-blue | 因 canvas 遮蓋整頁，halftone 僅加在側邊 panel |
+
+## 14. Garden 系統
+
+Garden 是 are.na 風格的 channel × block 收藏系統，跟 journal（LIFE）平行。
+
+### 14.1 資料模型
+- `garden_channels`：slug / title / summary / visibility(public|private) / position
+- `garden_blocks`：channel_id / type(link|image|note) / title / body / url / image_path / og_image / tags[] / position
+
+### 14.2 RLS
+- anon 只看 `visibility='public'` 的 channel 與其 blocks
+- authenticated（admin）全權
+
+### 14.3 視覺
+- Landing `/garden/`：像素索引列表，row hover 觸發 halftone overlay
+- Channel `/garden/[slug]/`：正方 block grid（aspect-ratio 1/1），左上 badge 區分 type
+  - link → `--moss`
+  - image → `--akache`
+  - note → `--ink`
+- Modal 用原生 `<dialog>`：link 顯示 og_image + VISIT 鈕；image 顯示原圖；note 顯示 Shippori Mincho 引用版面
+
+### 14.4 後端
+- `/api/og?url=` 抓 og:image / title / description（SSRF 防護：https only、私網 IP 阻擋、5s timeout、1MB cap、redirect 重檢）
+- Supabase Storage bucket `garden-images`，公開讀
