@@ -35,6 +35,8 @@
     }
   ],
   "rewrites": [
+    { "source": "/garden", "destination": "/garden.html" },
+    { "source": "/garden/", "destination": "/garden.html" },
     { "source": "/garden/:slug", "destination": "/garden/_channel.html" },
     { "source": "/garden/:slug/", "destination": "/garden/_channel.html" }
   ]
