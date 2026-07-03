@@ -9,7 +9,11 @@
   <meta property="og:title" content="Works · Projects — 廖洺玄">
   <meta property="og:description" content="廖洺玄的作品集：HPC、AI、全端、醫療資料、系統程式設計。">
   <meta property="og:locale" content="zh_TW">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="https://www.jaeggerjose.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.jaeggerjose.com/og-image.png">
   <meta name="twitter:site" content="@jaeggerjose">
   <meta name="twitter:title" content="Works · Projects — 廖洺玄">
   <meta name="twitter:description" content="廖洺玄的作品集：HPC、AI、全端、醫療資料、系統程式設計。">
@@ -20,7 +24,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css?v=9">
+  <link rel="stylesheet" href="css/style.css?v=10">
   <!-- Speculation Rules -->
   <script type="speculationrules">
   {"prerender":[{"source":"list","urls":["index.html","journal.html"]}],
@@ -66,8 +70,12 @@
       left: 50%;
       transform: translateX(-50%);
       text-align: center;
-      z-index: 10;
+      z-index: 30; /* above map tiles and pin labels */
       pointer-events: none;
+      background: rgba(4, 10, 28, 0.72);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      padding: 0.7rem 1.4rem;
     }
     .works-title .label {
       font-family: var(--font-pixel);
@@ -89,9 +97,9 @@
       left: 50%;
       transform: translateX(-50%);
       font-family: var(--font-pixel);
-      font-size: 0.5rem;
+      font-size: 0.75rem;
       letter-spacing: 0.25em;
-      color: rgba(180, 210, 255, 0.35);
+      color: rgba(190, 215, 255, 0.7);
       z-index: 10;
       pointer-events: none;
       animation: hint-pulse 3s ease-in-out infinite;
@@ -144,14 +152,15 @@
     .pin-lbl {
       display: block;
       font-family: var(--font-pixel);
-      font-size: 0.42rem;
+      font-size: 0.55rem;
       letter-spacing: 0.08em;
       white-space: nowrap;
       background: rgba(4, 10, 28, 0.82);
-      padding: 2px 6px;
+      padding: 3px 7px;
       border-left: 2px solid currentColor;
-      opacity: 0;
-      transform: translateY(3px);
+      /* faintly visible by default so desktop users can scan locations */
+      opacity: 0.55;
+      transform: translateY(0);
       transition: opacity 0.2s, transform 0.2s;
       position: relative;
       z-index: 1;
@@ -301,6 +310,7 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#works-main">SKIP TO CONTENT</a>
   <div class="cursor" id="cursor"></div>
 
   <!-- Navigation -->
@@ -338,7 +348,7 @@
   </div>
 
   <!-- Pixel World Map -->
-  <div class="works-wrap">
+  <div class="works-wrap" id="works-main">
     <canvas id="map-canvas" aria-hidden="true"></canvas>
 
     <div class="works-title" aria-hidden="true">
@@ -364,7 +374,7 @@
     <span class="foot-r">雪国 · 温泉 · 滑雪 · 爐端燒 · 天婦羅</span>
   </footer>
 
-  <script src="js/main.js?v=5"></script>
+  <script src="js/main.js?v=6"></script>
   <script src="js/works.js?v=4"></script>
   <!-- Vercel Analytics -->
   <script defer src="/_vercel/insights/script.js"></script>

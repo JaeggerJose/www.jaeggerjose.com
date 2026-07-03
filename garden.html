@@ -1,15 +1,25 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>GARDEN — Jaegger Jose</title>
   <meta name="description" content="A place where I keep links, images, and notes." />
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.jaeggerjose.com/garden">
+  <meta property="og:title" content="Garden — 廖洺玄">
+  <meta property="og:description" content="A place where I keep links, images, and notes.">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:image" content="https://www.jaeggerjose.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.jaeggerjose.com/og-image.png">
 
   <link rel="icon" href="favicon.svg" />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=9">
-  <link rel="stylesheet" href="css/garden.css?v=1">
+  <link rel="stylesheet" href="css/style.css?v=10">
+  <link rel="stylesheet" href="css/garden.css?v=2">
 
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-H8SCHM4MZK"></script>
   <script>
@@ -20,21 +30,45 @@
   </script>
 </head>
 <body class="page-garden">
+  <a class="skip-link" href="#garden-main">SKIP TO CONTENT</a>
 
-  <header class="site-header">
-    <a href="/" class="brand">JaeggerJose</a>
-    <nav class="site-nav">
-      <ul>
-        <li><a href="/#about">ABOUT</a></li>
-        <li><a href="journal.html">LIFE</a></li>
-        <li><a href="works.html">PROJECTS</a></li>
-        <li><a href="garden.html" aria-current="page">GARDEN</a></li>
-        <li><a href="/#contact">CONTACT</a></li>
-      </ul>
-    </nav>
-  </header>
+  <div class="cursor" id="cursor"></div>
 
-  <main class="garden-main">
+  <!-- Navigation -->
+  <nav id="nav">
+    <a class="nav-logo" href="/">Mike<span>廖洺玄</span></a>
+    <ul class="nav-links">
+      <li><a href="/#about">ABOUT</a></li>
+      <li><a href="/#work">WORK</a></li>
+      <li><a href="/#education">SCHOOL</a></li>
+      <li><a href="/#skills">SKILLS</a></li>
+      <li><a href="/journal.html">LIFE</a></li>
+      <li><a href="/works.html">PROJECTS</a></li>
+      <li><a href="/garden.html" class="active" aria-current="page">GARDEN</a></li>
+      <li><a href="/#contact">CONTACT</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle day/night mode">◐ NGT</button>
+      <button class="nav-menu" id="nav-menu" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="/#about" class="mm-link">ABOUT</a>
+    <a href="/#work" class="mm-link">WORK</a>
+    <a href="/#education" class="mm-link">SCHOOL</a>
+    <a href="/#skills" class="mm-link">SKILLS</a>
+    <a href="/journal.html" class="mm-link">LIFE</a>
+    <a href="/works.html" class="mm-link">PROJECTS</a>
+    <a href="/garden.html" class="mm-link active">GARDEN</a>
+    <a href="/#contact" class="mm-link">CONTACT</a>
+    <button class="mm-link theme-toggle-mm" id="theme-toggle-mm" aria-label="Toggle day/night mode">◐ NGT</button>
+  </div>
+
+  <main class="garden-main" id="garden-main">
     <section class="garden-hero">
       <h1 class="garden-title">GARDEN</h1>
       <p class="garden-subtitle">a place where i keep things</p>
@@ -84,7 +118,7 @@
   </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="js/main.js?v=5"></script>
+  <script src="js/main.js?v=6"></script>
   <script src="js/garden.js?v=1"></script>
   <script defer src="/_vercel/insights/script.js"></script>
 </body>

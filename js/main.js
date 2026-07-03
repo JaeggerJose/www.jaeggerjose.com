@@ -4,6 +4,8 @@
 
 'use strict';
 
+const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 /* ─── Page Transitions + Hover Prefetch ─── */
 (function () {
   /* Hover prefetch: browser gets 150-300ms head start before click */
@@ -90,12 +92,14 @@ const sections = ['hero','about','work','education','skills','contact'].map(
 ).filter(Boolean);
 
 const heroEl = document.getElementById('hero') || document.getElementById('journal-hero');
+/* Pages with a light background and no dark hero (e.g. garden) keep the light nav */
+const lightNavPage = document.body.classList.contains('page-garden');
 
 function onScroll() {
   if (!nav) return;
   const heroBottom = heroEl ? heroEl.offsetTop + heroEl.offsetHeight : 0;
   const navH       = nav.offsetHeight;
-  const pastHero   = heroEl != null && window.scrollY >= heroBottom - navH;
+  const pastHero   = lightNavPage || (heroEl != null && window.scrollY >= heroBottom - navH);
 
   // Dark nav over hero, light nav over content
   nav.classList.toggle('scrolled', window.scrollY > 60 && !pastHero);
@@ -118,10 +122,14 @@ const mobileMenu = document.getElementById('mobile-menu');
 
 if (menuBtn && mobileMenu) {
   menuBtn.addEventListener('click', () => {
-    mobileMenu.classList.toggle('open');
+    const open = mobileMenu.classList.toggle('open');
+    nav?.classList.toggle('menu-open', open);
   });
   mobileMenu.querySelectorAll('.mm-link').forEach(link => {
-    link.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    link.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+      nav?.classList.remove('menu-open');
+    });
   });
 }
 
@@ -131,7 +139,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     const target = document.querySelector(a.getAttribute('href'));
     if (target) {
       e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth' });
+      target.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth' });
     }
   });
 });
@@ -184,9 +192,9 @@ function createSnow(canvasId, density, speed = 1, maxAlpha = 0.55) {
       ctx.fillStyle = `rgba(220, 232, 255, ${f.alpha})`;
       ctx.fillRect(px, py, f.s, f.s);
     }
-    requestAnimationFrame(draw);
+    if (!REDUCED_MOTION) requestAnimationFrame(draw);
   }
-  draw();
+  draw(); /* reduced motion: single static frame keeps the atmosphere */
 }
 
 createSnow('snow',         130, 1);
@@ -205,7 +213,9 @@ const phrases = [
 ];
 
 const twEl = document.getElementById('tw-text');
-if (twEl) {
+if (twEl && REDUCED_MOTION) {
+  twEl.textContent = phrases[0];
+} else if (twEl) {
   let pIdx = 0, cIdx = 0, deleting = false, waiting = false;
 
   function tick() {
@@ -236,6 +246,9 @@ const io = new IntersectionObserver(
     if (entry.isIntersecting) {
       entry.target.classList.add('visible');
       io.unobserve(entry.target); // fire once
+      /* Drop the stagger delay once revealed, so theme-toggle color
+         transitions don't ripple card by card */
+      setTimeout(() => { entry.target.style.transitionDelay = ''; }, 1200);
     }
   }),
   { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }

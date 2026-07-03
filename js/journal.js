@@ -118,9 +118,16 @@ sb.auth.onAuthStateChange((_event, session) => {
     authUserLabel.textContent = currentUser.email;
   } else {
     authBar.style.display   = 'none';
-    loginHint.style.display = 'flex';
+    /* 登入按鈕只在 URL 帶 #admin 時顯示，避免對訪客曝光 */
+    loginHint.style.display = location.hash === '#admin' ? 'flex' : 'none';
   }
   renderGrid();
+});
+
+window.addEventListener('hashchange', () => {
+  if (!currentUser) {
+    loginHint.style.display = location.hash === '#admin' ? 'flex' : 'none';
+  }
 });
 
 /* ─── Fetch ─── */

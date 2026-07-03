@@ -1,5 +1,7 @@
 .playwright-mcp/
+TODO.md
 *.png
+!og-image.png
 *.jpeg
 *.jpg
 .DS_Store

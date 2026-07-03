@@ -4,6 +4,8 @@
   max-width: 1080px;
   margin: 0 auto;
   padding: clamp(2rem, 4vw, 5rem) clamp(1rem, 3vw, 3rem);
+  /* clear the fixed #nav */
+  padding-top: calc(4.5rem + clamp(1.5rem, 3vw, 3rem));
 }
 
 .garden-hero { margin-bottom: clamp(2rem, 4vw, 4rem); }

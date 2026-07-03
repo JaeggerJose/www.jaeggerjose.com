@@ -24,9 +24,10 @@
   --akache:      #c8603a;      /* 赤茶 — 次要 accent */
   --akache-dim:  rgba(200, 96, 58, 0.15);
   --akache-lt:   #d4815a;      /* 淺版 */
+  --akache-text: #9c4a28;      /* 深版 — 小字文字用（AA 對比） */
 
   --muted-border: rgba(26, 20, 16, 0.1);
-  --muted-text:   #8a7560;
+  --muted-text:   #6b5945;
 
   /* ── Dark sections (Hero / Contact / Footer) ── */
   --void:    #080c12;
@@ -202,6 +203,14 @@ body::after {
   transform: translateY(-100%); transition: transform 0.4s ease;
 }
 .mobile-menu.open { transform: translateY(0); display: flex; }
+
+/* Keep logo + hamburger legible over the light menu sheet */
+#nav.menu-open .nav-logo      { color: var(--ink); }
+#nav.menu-open .nav-logo span { color: var(--moss); }
+#nav.menu-open .nav-menu span { background: var(--ink-dim); }
+html[data-theme="dark"] #nav.menu-open .nav-logo      { color: var(--snow); }
+html[data-theme="dark"] #nav.menu-open .nav-logo span { color: var(--steam); }
+html[data-theme="dark"] #nav.menu-open .nav-menu span { background: var(--snow-dim); }
 .mm-link {
   font-family: var(--font-pixel); font-size: 1rem;
   color: var(--ink-dim); letter-spacing: 0.3em; transition: color 0.2s;
@@ -237,7 +246,12 @@ html[data-theme="dark"] .theme-toggle-mm { border-color: var(--dark-muted); colo
   font-family: var(--font-pixel);
   font-size: clamp(0.75rem, 1.2vw, 0.95rem);
   color: var(--steam); letter-spacing: 0.55em; margin-bottom: 2rem;
+  white-space: nowrap; /* hand-spaced letters must never wrap mid-word */
   opacity: 0; animation: slide-up 0.7s ease forwards 0.3s;
+}
+@media (max-width: 480px) {
+  .hero-eyebrow { letter-spacing: 0.28em; font-size: 0.7rem; }
+  .journal-hero-content .hero-eyebrow { letter-spacing: 0.32em; }
 }
 .hero-name {
   font-family: var(--font-pixel);
@@ -309,7 +323,7 @@ section { padding: var(--pad-y) var(--pad-x); }
 }
 .section-h2 small {
   display: block; font-family: var(--font-pixel); font-size: 0.88rem;
-  color: var(--akache); letter-spacing: 0.3em; margin-top: 0.9rem; font-weight: 400;
+  color: var(--akache-text); letter-spacing: 0.3em; margin-top: 0.9rem; font-weight: 400;
 }
 .section-inner { max-width: 860px; margin: 0 auto; }
 .body-text { font-size: 1rem; color: var(--muted-text); line-height: 1.85; margin-bottom: 1.2rem; }
@@ -354,7 +368,7 @@ blockquote p {
 }
 blockquote cite {
   font-family: var(--font-pixel); font-size: 0.75rem;
-  color: var(--akache); letter-spacing: 0.2em; font-style: normal;
+  color: var(--akache-text); letter-spacing: 0.2em; font-style: normal;
 }
 
 .lang-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; }
@@ -406,7 +420,7 @@ blockquote cite {
     radial-gradient(ellipse 30% 35% at 5% 80%, rgba(200, 96, 58, 0.04) 0%, transparent 55%);
   pointer-events: none;
 }
-#work .section-h2 small { color: var(--akache); }
+#work .section-h2 small { color: var(--akache-text); }
 
 .timeline { position: relative; padding-left: 2.5rem; }
 .timeline::before {
@@ -427,7 +441,7 @@ blockquote cite {
 }
 .tl-date {
   font-family: var(--font-pixel); font-size: 0.82rem;
-  color: var(--akache); letter-spacing: 0.2em; margin-bottom: 0.6rem;
+  color: var(--akache-text); letter-spacing: 0.2em; margin-bottom: 0.6rem;
 }
 .tl-title {
   font-family: var(--font-serif); font-size: 1.55rem; font-weight: 600;
@@ -697,6 +711,7 @@ html[data-theme="dark"] {
   --akache:       #e07858;
   --akache-dim:   rgba(224, 120, 88, 0.15);
   --akache-lt:    #e89878;
+  --akache-text:  #e07858;
   /* halftone — 暗色模式下調低不透明度 */
   --ht-light-dot:  rgba(86, 196, 170, 0.10);
   --ht-light-dot2: rgba(224, 120, 88, 0.06);
@@ -728,7 +743,7 @@ body:has(#journal-hero) { background: #04060e; }
 
 /* ── Hero ── */
 #journal-hero {
-  position: relative; height: 62vh; min-height: 420px;
+  position: relative; height: 44vh; min-height: 340px;
   background-color: #04060e;
   background-image:
     radial-gradient(ellipse 200% 120% at 50% -10%, #0e2858 0%, transparent 60%),
@@ -1290,3 +1305,34 @@ body:has(#journal-hero) { background: #04060e; }
   .modal-content { padding: 1.8rem; }
   .journal-hero-content h1 { letter-spacing: -0.01em; }
 }
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto !important; }
+}
+
+/* ─── Keyboard Focus ─── */
+:focus-visible {
+  outline: 2px solid var(--steam);
+  outline-offset: 2px;
+  /* dark backing ring so the teal outline stays visible on light paper too */
+  box-shadow: 0 0 0 2px rgba(8, 12, 18, 0.9);
+}
+
+/* ─── Skip Link ─── */
+.skip-link {
+  position: fixed; top: 0.75rem; left: 0.75rem;
+  z-index: 300;
+  transform: translateY(-250%);
+  background: var(--night-d); color: var(--snow);
+  font-family: var(--font-pixel); font-size: 0.75rem; letter-spacing: 0.12em;
+  padding: 0.8rem 1.1rem;
+  border: 1px solid var(--steam);
+  transition: transform 0.2s ease;
+}
+.skip-link:focus, .skip-link:focus-visible { transform: translateY(0); }
