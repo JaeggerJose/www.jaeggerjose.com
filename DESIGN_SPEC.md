@@ -272,10 +272,10 @@ www.jaeggerjose.com/
 
 | 檔案 | 目前版本 |
 |---|---|
-| css/style.css | v9 |
-| js/main.js | v5 |
-| js/journal.js | v5 |
-| js/works.js | v4 |
+| css/style.css | v11 |
+| js/main.js | v6 |
+| js/journal.js | v7 |
+| js/works.js | v5 |
 
 ---
 

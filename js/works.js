@@ -450,15 +450,18 @@ const PROJECTS = [
     lbl.textContent = p.title;
 
     btn.append(glow, core, lbl);
-    btn.addEventListener('click', () => openPanel(p.id));
+    btn.addEventListener('click', () => openPanel(p.id, btn));
     container.appendChild(btn);
   });
 })();
 
 /* ─── Panel ─── */
-function openPanel(pid) {
+let lastTrigger = null;
+
+function openPanel(pid, trigger) {
   const p = PROJECTS.find(x => x.id === pid);
   if (!p) return;
+  lastTrigger = trigger || document.activeElement;
   const panel   = document.getElementById('project-panel');
   const body    = document.getElementById('panel-body');
   const overlay = document.getElementById('map-overlay');
@@ -495,18 +498,37 @@ function openPanel(pid) {
 
   body.append(accent, biomeEl, yearEl, titleEl, subEl, descEl, chips, gh);
   panel.classList.add('open');
+  panel.setAttribute('aria-hidden', 'false');
   if (overlay) overlay.classList.add('visible');
+  document.getElementById('panel-close')?.focus();
 }
 
 function closePanel() {
-  document.getElementById('project-panel')?.classList.remove('open');
+  const panel = document.getElementById('project-panel');
+  if (!panel || !panel.classList.contains('open')) return;
+  panel.classList.remove('open');
+  panel.setAttribute('aria-hidden', 'true');
   document.getElementById('map-overlay')?.classList.remove('visible');
+  if (lastTrigger) { lastTrigger.focus(); lastTrigger = null; }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('panel-close')?.addEventListener('click', closePanel);
   document.getElementById('map-overlay')?.addEventListener('click', closePanel);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+  document.addEventListener('keydown', e => {
+    const panel = document.getElementById('project-panel');
+    if (!panel || !panel.classList.contains('open')) return;
+    if (e.key === 'Escape') { closePanel(); return; }
+    // Focus trap: keep Tab cycling inside the open panel
+    if (e.key === 'Tab') {
+      const focusable = panel.querySelectorAll('button, a[href]');
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last  = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
 
   // Sync works-wrap top offset to actual nav height (nav height varies by viewport)
   const nav  = document.getElementById('nav');
