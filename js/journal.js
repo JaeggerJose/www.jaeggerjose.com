@@ -160,7 +160,7 @@ function buildCard(entry, index) {
     const img = document.createElement('img');
     img.className  = 'entry-cover';
     img.src        = entry.images[0];
-    img.alt        = '';
+    img.alt        = entry.title || '';
     img.loading    = 'lazy';
     article.appendChild(img);
   }
@@ -293,10 +293,10 @@ function openViewModal(id) {
 
   if (entry.images && entry.images.length) {
     const grid = el('div', 'modal-images');
-    entry.images.filter(Boolean).forEach(src => {
+    entry.images.filter(Boolean).forEach((src, i) => {
       const img = document.createElement('img');
       img.src     = src;
-      img.alt     = '';
+      img.alt     = entry.title ? entry.title + ' — 圖 ' + (i + 1) : '';
       img.loading = 'lazy';
       grid.appendChild(img);
     });
@@ -319,15 +319,45 @@ function openViewModal(id) {
 
   entryModal.classList.add('open');
   document.body.style.overflow = 'hidden';
+  afterModalOpen(entryModal);
 }
 
 function closeViewModal() {
   entryModal.classList.remove('open');
   document.body.style.overflow = '';
+  afterModalClose();
 }
 
 modalClose.addEventListener('click', closeViewModal);
 entryModal.querySelector('.modal-backdrop').addEventListener('click', closeViewModal);
+
+/* ─── Modal a11y: focus move/return, Escape, focus trap (shared by all .entry-modal) ─── */
+let modalLastFocus = null;
+function afterModalOpen(modal) {
+  modalLastFocus = document.activeElement;
+  const focusable = modal.querySelector('input, textarea, select, button, [href]');
+  (focusable || modal).focus();
+}
+function afterModalClose() {
+  if (modalLastFocus) { modalLastFocus.focus(); modalLastFocus = null; }
+}
+document.addEventListener('keydown', e => {
+  const open = document.querySelector('.entry-modal.open');
+  if (!open) return;
+  if (e.key === 'Escape') {
+    if (open.id === 'entry-modal')      closeViewModal();
+    else if (open.id === 'edit-modal')  closeEditModal();
+    else if (open.id === 'login-modal') closeLoginModal();
+    return;
+  }
+  if (e.key === 'Tab') {
+    const f = open.querySelectorAll('input, textarea, select, button, [href]');
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
 
 /* ─── Image Upload ─── */
 let uploadedImages = [];  /* array of public URLs for current edit session */
@@ -412,6 +442,7 @@ function openEditModal(id) {
 
   editModal.classList.add('open');
   document.body.style.overflow = 'hidden';
+  afterModalOpen(editModal);
 }
 
 function closeEditModal() {
@@ -419,6 +450,7 @@ function closeEditModal() {
   document.body.style.overflow = '';
   editingId = null;
   uploadedImages = [];
+  afterModalClose();
 }
 
 editClose.addEventListener('click', closeEditModal);
@@ -470,6 +502,7 @@ async function deleteEntry(id) {
 loginBtn.addEventListener('click', () => {
   loginModal.classList.add('open');
   document.body.style.overflow = 'hidden';
+  afterModalOpen(loginModal);
 });
 
 function closeLoginModal() {
@@ -477,6 +510,7 @@ function closeLoginModal() {
   document.body.style.overflow = '';
   loginError.textContent = '';
   loginForm.reset();
+  afterModalClose();
 }
 
 loginClose.addEventListener('click', closeLoginModal);

@@ -73,17 +73,6 @@ const PROJECTS = [
     mapX: 79, mapY: 46,
   },
   {
-    id: 'hostal',
-    title: 'Hostal Management',
-    sub: 'Full-stack Web System',
-    year: '2026',
-    desc: '青年旅館全端管理系統，TypeScript 建置，涵蓋訂房管理、房間分配、住客資料與報表功能，後端整合 PostgreSQL 資料庫。',
-    tech: ['TypeScript', 'Node.js', 'PostgreSQL', 'REST API'],
-    github: 'https://github.com/jaeggerjose/Hostal-Management',
-    pinColor: '#a8d080',
-    mapX: 20, mapY: 66,
-  },
-  {
     id: 'inbody',
     title: 'InBody Tracker',
     sub: 'Health · TypeScript App',
@@ -115,6 +104,39 @@ const PROJECTS = [
     github: 'https://github.com/jaeggerjose/NYCU-dicom-fhir-converter',
     pinColor: '#80d8d0',
     mapX: 63, mapY: 74,
+  },
+  {
+    id: 'trainboard',
+    title: 'Tokyo Train Board',
+    sub: 'CLI · Terminal UI',
+    year: '2026',
+    desc: '終端機翻牌式（Split-Flap）東京鐵道到站看板模擬器，支援 JR／東京地鐵等 20+ 條路線，串接 ODPT 即時到站資料並提供靜態離線備援，已發布為 PyPI 套件並附狀態列跑馬燈模式。',
+    tech: ['Python', 'TUI', 'ODPT API', 'PyPI', 'CI/CD'],
+    github: 'https://github.com/jaeggerjose/tokyo-train-board',
+    pinColor: '#f0d060',
+    mapX: 20, mapY: 66,
+  },
+  {
+    id: 'statusline',
+    title: 'Claude Statusline (csl)',
+    sub: 'Developer Tooling · CLI',
+    year: '2026',
+    desc: 'Claude Code 狀態列的主題系統與套件管理式 CLI，設計 themepack 格式與 install script，並發布為可透過 marketplace 安裝的官方 plugin，settings.json 作為唯一狀態來源，無需背景常駐程式。',
+    tech: ['Shell', 'CLI Design', 'Plugin Architecture'],
+    github: 'https://github.com/jaeggerjose/claude-statusline',
+    pinColor: '#9880e0',
+    mapX: 10, mapY: 50,
+  },
+  {
+    id: 'maple',
+    title: 'Maple Colorscripts',
+    sub: 'Systems · Terminal Art',
+    year: '2026',
+    desc: '將《楓之谷》怪物精靈圖以 Truecolor ANSI 藝術呈現於終端機，素材於建置期預先轉譯並內嵌進單一 Go binary，執行期零依賴、啟動即時。',
+    tech: ['Go', 'ANSI Rendering', 'Build Tooling'],
+    github: 'https://github.com/jaeggerjose/maple-colorscripts',
+    pinColor: '#e08050',
+    mapX: 50, mapY: 14,
   },
 ];
 
@@ -450,15 +472,18 @@ const PROJECTS = [
     lbl.textContent = p.title;
 
     btn.append(glow, core, lbl);
-    btn.addEventListener('click', () => openPanel(p.id));
+    btn.addEventListener('click', () => openPanel(p.id, btn));
     container.appendChild(btn);
   });
 })();
 
 /* ─── Panel ─── */
-function openPanel(pid) {
+let lastTrigger = null;
+
+function openPanel(pid, trigger) {
   const p = PROJECTS.find(x => x.id === pid);
   if (!p) return;
+  lastTrigger = trigger || document.activeElement;
   const panel   = document.getElementById('project-panel');
   const body    = document.getElementById('panel-body');
   const overlay = document.getElementById('map-overlay');
@@ -495,18 +520,37 @@ function openPanel(pid) {
 
   body.append(accent, biomeEl, yearEl, titleEl, subEl, descEl, chips, gh);
   panel.classList.add('open');
+  panel.setAttribute('aria-hidden', 'false');
   if (overlay) overlay.classList.add('visible');
+  document.getElementById('panel-close')?.focus();
 }
 
 function closePanel() {
-  document.getElementById('project-panel')?.classList.remove('open');
+  const panel = document.getElementById('project-panel');
+  if (!panel || !panel.classList.contains('open')) return;
+  panel.classList.remove('open');
+  panel.setAttribute('aria-hidden', 'true');
   document.getElementById('map-overlay')?.classList.remove('visible');
+  if (lastTrigger) { lastTrigger.focus(); lastTrigger = null; }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('panel-close')?.addEventListener('click', closePanel);
   document.getElementById('map-overlay')?.addEventListener('click', closePanel);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+  document.addEventListener('keydown', e => {
+    const panel = document.getElementById('project-panel');
+    if (!panel || !panel.classList.contains('open')) return;
+    if (e.key === 'Escape') { closePanel(); return; }
+    // Focus trap: keep Tab cycling inside the open panel
+    if (e.key === 'Tab') {
+      const focusable = panel.querySelectorAll('button, a[href]');
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last  = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
 
   // Sync works-wrap top offset to actual nav height (nav height varies by viewport)
   const nav  = document.getElementById('nav');

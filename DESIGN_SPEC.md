@@ -261,10 +261,14 @@ www.jaeggerjose.com/
 | compiler | Compiler Design | 2024 | (82, 36) |
 | classroom | CGU Kubeflow LDAP Admin | 2024 | (46, 46) |
 | sdn | NYCU SDN | 2025 | (79, 46) |
-| hostal | Hostal Management | 2026 | (20, 66) |
 | inbody | InBody Tracker | 2026 | (38, 70) |
 | parallel | Parallel Program Design | 2024 | (58, 58) |
 | dicom | DICOM → FHIR Converter | 2025 | (63, 74) |
+| trainboard | Tokyo Train Board | 2026 | (20, 66) |
+| statusline | Claude Statusline (csl) | 2026 | (10, 50) |
+| maple | Maple Colorscripts | 2026 | (50, 14) |
+
+> `hostal`（Hostal Management）已移除：對應 repo 在 GitHub 上已不存在（404），無法修復連結。
 
 ---
 
@@ -272,10 +276,10 @@ www.jaeggerjose.com/
 
 | 檔案 | 目前版本 |
 |---|---|
-| css/style.css | v9 |
-| js/main.js | v5 |
-| js/journal.js | v5 |
-| js/works.js | v4 |
+| css/style.css | v11 |
+| js/main.js | v6 |
+| js/journal.js | v7 |
+| js/works.js | v6 |
 
 ---
 
