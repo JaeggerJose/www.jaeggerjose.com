@@ -3,19 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Apply the saved theme before first paint (main.js loads deferred) -->
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('theme')||'light'}catch(e){}</script>
   <title>Channel — Garden — Jaegger Jose</title>
   <link rel="icon" href="/favicon.svg" />
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/style.css?v=11">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap"></noscript>
+  <link rel="stylesheet" href="/css/style.css?v=13">
   <link rel="stylesheet" href="/css/garden.css?v=2">
-
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-H8SCHM4MZK"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-H8SCHM4MZK');
-  </script>
 </head>
 <body class="page-garden">
   <a class="skip-link" href="#garden-main">SKIP TO CONTENT</a>
@@ -29,7 +26,6 @@
       <li><a href="/#about">ABOUT</a></li>
       <li><a href="/#work">WORK</a></li>
       <li><a href="/works.html">PROJECTS</a></li>
-      <li><a href="/journal.html">LIFE</a></li>
       <li><a href="/#contact">CONTACT</a></li>
     </ul>
     <div class="nav-right">
@@ -45,7 +41,6 @@
     <a href="/#about" class="mm-link">ABOUT</a>
     <a href="/#work" class="mm-link">WORK</a>
     <a href="/works.html" class="mm-link">PROJECTS</a>
-    <a href="/journal.html" class="mm-link">LIFE</a>
     <a href="/#contact" class="mm-link">CONTACT</a>
     <button class="mm-link theme-toggle-mm" id="theme-toggle-mm" aria-label="Toggle day/night mode">◐ NGT</button>
   </div>
@@ -138,9 +133,9 @@
     </form>
   </dialog>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="/js/main.js?v=6"></script>
-  <script src="/js/garden-channel.js?v=1"></script>
+  <script defer src="/js/vendor/supabase-2.117.2.js"></script>
+  <script defer src="/js/main.js?v=10"></script>
+  <script defer src="/js/garden-channel.js?v=2"></script>
   <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

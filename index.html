@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Apply the saved theme before first paint (main.js loads deferred) -->
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('theme')||'light'}catch(e){}</script>
   <meta name="description" content="廖洺玄 (Mike Liao) — Full-stack engineer in Taiwan. MSc NYCU, IEEE published 2023. 雪国 · 温泉 · 滑雪 · 爐端燒 · 天婦羅">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.jaeggerjose.com">
@@ -18,30 +20,21 @@
   <meta name="twitter:title" content="廖洺玄 · Mike Liao — Full-Stack Engineer">
   <meta name="twitter:description" content="Full-stack engineer in Taiwan. MSc NYCU, IEEE 2023.">
   <link rel="canonical" href="https://www.jaeggerjose.com/">
-  <link rel="alternate" type="application/rss+xml" href="/api/feed" title="廖洺玄の日常">
   <title>廖洺玄 · Ming-Hsuan Liao</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;600;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap"></noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Shippori+Mincho+B1:wght@400;700&family=Noto+Sans:ital,wght@0,300;0,400;1,300&display=swap"></noscript>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/style.css?v=11">
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-H8SCHM4MZK"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-H8SCHM4MZK');
-  </script>
+  <link rel="stylesheet" href="css/style.css?v=13">
   <!-- Speculation Rules: prerender linked pages while idle -->
   <script type="speculationrules">
-  {"prerender":[{"source":"list","urls":["works.html","journal.html"]}],
-   "prefetch": [{"source":"list","urls":["works.html","journal.html"]}]}
+  {"prerender":[{"source":"list","urls":["works.html"]}],
+   "prefetch": [{"source":"list","urls":["works.html"]}]}
   </script>
 </head>
 <body>
-  <a class="skip-link" href="#hero">SKIP TO CONTENT</a>
+  <a class="skip-link" href="#main-content">SKIP TO CONTENT</a>
 
   <div class="cursor" id="cursor"></div>
   <canvas id="global-snow" class="global-snow" aria-hidden="true"></canvas>
@@ -53,7 +46,6 @@
       <li><a href="#about">ABOUT</a></li>
       <li><a href="#work">WORK</a></li>
       <li><a href="works.html">PROJECTS</a></li>
-      <li><a href="journal.html">LIFE</a></li>
       <li><a href="#contact">CONTACT</a></li>
     </ul>
     <div class="nav-right">
@@ -69,11 +61,11 @@
     <a href="#about" class="mm-link">ABOUT</a>
     <a href="#work" class="mm-link">WORK</a>
     <a href="works.html" class="mm-link">PROJECTS</a>
-    <a href="journal.html" class="mm-link">LIFE</a>
     <a href="#contact" class="mm-link">CONTACT</a>
     <button class="mm-link theme-toggle-mm" id="theme-toggle-mm" aria-label="Toggle day/night mode">◐ NGT</button>
   </div>
 
+  <main id="main-content">
   <!-- ─── Hero ─── -->
   <section id="hero">
     <canvas id="snow"></canvas>
@@ -316,13 +308,15 @@
       </div>
     </div>
   </section>
+  </main>
 
   <footer>
     <span class="foot-l">© 2026 Ming-Hsuan Liao · 廖洺玄</span>
     <span class="foot-r">雪国 · 温泉 · 滑雪 · 爐端燒 · 天婦羅</span>
   </footer>
 
-  <script src="js/main.js?v=6"></script>
+  <script defer src="js/vendor/motion-13.5.0.js"></script>
+  <script defer src="js/main.js?v=10"></script>
   <!-- Vercel Analytics (equivalent to <Analytics /> from @vercel/analytics/next) -->
   <script defer src="/_vercel/insights/script.js"></script>
 </body>
