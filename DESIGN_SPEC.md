@@ -10,7 +10,7 @@
 
 四個視覺層次共存：
 1. **明亮段落**（About / Work / Education / Skills）— 和紙米色底，苔綠 × 赤茶 accent，雙色 halftone 點陣
-2. **暗色英雄段落**（Hero / Journal Hero / Works Map）— 深海藍黑底，雪白 × steam 藍綠 accent，像素藍稀疏點陣
+2. **暗色英雄段落**（Hero / Works Map）— 深海藍黑底，雪白 × steam 藍綠 accent，像素藍稀疏點陣
 3. **日夜模式切換**（`data-theme="dark"`）— 全域顏色翻轉，暗色模式下和紙段落改為深海藍系，halftone token 同步切換
 4. **互動點陣**（card hover）— 懸停時顯現細密 16px 點陣，強化印刷翻頁手感
 
@@ -73,13 +73,13 @@
 
 | CSS Variable | Font Family | 用途 |
 |---|---|---|
-| `--font-pixel` | `'Press Start 2P'` | 標籤、眉標、Nav 連結、pixel art 元素 |
+| `--font-pixel` | `'Press Start 2P', 'Press Start 2P Fallback'` | 標籤、眉標、Nav 連結、pixel art 元素（Fallback = 本機等寬字型 `size-adjust: 166.67%`，避免換字型時 hero 位移） |
 | `--font-serif` | `'Shippori Mincho B1'` | Hero 名字、Section 標題、Card 標題 |
 | `--font-body` | `'Noto Sans'` | 正文段落（weight 300） |
 
 ### 字型使用規律
 - **所有分類標籤、eyebrow、Nav**：`--font-pixel`，`font-size: 0.75rem`–`0.88rem`，`letter-spacing: 0.2em`+
-- **主要標題（h1/h2/h3）**：`--font-serif`，weight 600–700
+- **主要標題（h1/h2/h3）**：`--font-serif`，weight 400 / 700（只載入這兩個字重；CJK 字型每多一個字重就多一整組分片）
 - **正文**：`--font-body`，weight 300，`line-height: 1.7`
 - **最小字型限制**：所有像素字體最小 `0.5rem`（因 Press Start 2P 極小時不可讀）
 
@@ -114,18 +114,9 @@
 
 Hero SVG 山景：3 層多邊形（遠 / 中 / 前景）+ 像素松樹，固定顏色（不受主題影響）。
 
-### 5.2 journal.html — 生活日記
+### 5.2 journal.html（已移除，2026-10-02）
 
-- **Hero**：`#04060e` 深黑，Canvas 雪花（55 particles, opacity 0.65）
-- **內容區**：強制暗色（`body:has(#journal-hero) { background: #04060e; }`）
-- **Entry Grid**：
-  - 桌面（≥900px，≥2 筆）：Editorial 2fr+1fr 雜誌版式
-    - 左：`.entry-card--featured`（300px 封面圖）
-    - 右：`.entry-card--compact` 堆疊（100px 封面圖）
-    - 其餘：3-col `.entry-grid-rest`
-  - 手機：單欄 card 列表
-- **篩選列**：ALL / 日記 / 写真 + 搜尋框
-- **Modal**：查看 / 編輯日記（管理員登入後顯示編輯按鈕）
+日記頁已下線，`/journal.html` 與 `/journal` 永久轉址到 `/`（`vercel.json` redirects）。Supabase 的 `journal_entries` 資料表與 `journal-images` bucket 保留未刪。
 
 ### 5.3 works.html — 作品集
 
@@ -166,15 +157,6 @@ border: 1px solid var(--moss-dim);
 color: var(--moss);
 ```
 
-### 6.4 Entry Cards（Journal 暗色）
-
-```css
-background: rgba(14, 22, 40, 0.85);
-border: 1px solid rgba(61, 214, 200, 0.08);
-border-radius: 0;  /* 直角，無圓角 */
-hover: border-color → rgba(61, 214, 200, 0.25)
-```
-
 ### 6.5 自訂游標
 
 ```css
@@ -190,11 +172,12 @@ hover a/button 時放大 + 邊框變色
 | 動畫 | 實作 | 詳情 |
 |---|---|---|
 | 全頁雪 | Canvas `#global-snow`（`position: fixed; z-index: 9996`） | index.html 專屬：50 顆，speed 0.5，maxAlpha 0.20（不遮文字） |
-| 雪花 | Canvas `createSnow(canvasId, density, speed, maxAlpha)` | Hero: 130/1.0，Journal: 55/0.65，Contact: 60/0.7 |
+| 雪花 | Canvas `createSnow(canvasId, density, speed, maxAlpha)` | Hero: 130/1.0，Contact: 60/0.7 |
 | 頁面切換 | CSS `@view-transition { navigation: auto; }` | out: fade+translateY(-8px) 0.16s，in: fade+translateY(8px) 0.22s |
 | Hover Prefetch | JS `mouseover` → `<link rel=prefetch>` | 同源頁面預讀，避免重複 |
-| Speculation Rules | `<script type="speculationrules">` | 各頁面預 render 其他兩頁 |
-| Reveal | IntersectionObserver `.reveal` → `.visible` | 滾動進入時 fade+translateY 顯示 |
+| Speculation Rules | `<script type="speculationrules">` | index ↔ works 互相預 render |
+| Reveal | Motion `inView` + `animate`（`js/vendor/motion-13.5.0.js`）`.reveal` → `.visible` | 滾動進入時 spring fade+translateY，同層 stagger 0.09s；無 Motion / reduced-motion 直接顯示 |
+| Hero 開場 | CSS `rise-in`（eyebrow、姓名：只做位移，首幀即可見）+ `slide-up`（其餘 0.2–0.8s 依序淡入） | eyebrow/姓名是 LCP 候選，不可從 `opacity: 0` 開始 |
 | Contact 圓環 | CSS `@keyframes onsen-ripple` on `#contact::before/::after` | 6s 呼吸縮放 |
 
 ---
@@ -205,8 +188,6 @@ hover a/button 時放大 + 邊框變色
 |---|---|
 | `≥ 860px` | 桌面 Nav（連結全顯示） |
 | `< 860px` | 漢堡選單 |
-| `≥ 900px` | Journal Editorial Grid（2fr+1fr） |
-| `< 900px` | Journal 單欄 |
 | `≥ 768px` | Works panel width: 420px |
 | `< 768px` | Works panel width: 100vw |
 
@@ -217,11 +198,11 @@ hover a/button 時放大 + 邊框變色
 ### Supabase
 - **Project**：`jaeggerjose-portfolio`（sg region）
 - **Auth**：Email/Password（GoTrue）
-- **Storage Bucket**：`journal-images`（public read）
-- **Tables**：`journal_entries`（含 `type`, `date`, `title`, `content`, `tags`, `images` 欄位）
+- **Storage Bucket**：`garden-images`（garden 使用）；`journal-images` 為已下線日記頁的遺留資料
+- **Tables**：`garden_channels`、`garden_blocks`（見 §14）；`journal_entries` 為日記頁遺留資料（頁面已移除，資料保留）
 
 ### API Routes（Vercel Edge Functions）
-- `GET /api/feed` — RSS 2.0 feed（日記條目）
+- `GET /api/og?url=` — 抓取外部連結的 OG metadata（garden 新增 link block 用）
 
 ### 重要 GoTrue 注意事項
 手動 INSERT `auth.users` 時，所有 varchar 欄位必須設 `''`（空字串）而非 `NULL`，否則 GoTrue Go 掃描時會報錯（`converting NULL to string is unsupported`）。
@@ -233,17 +214,21 @@ hover a/button 時放大 + 邊框變色
 ```
 www.jaeggerjose.com/
 ├── index.html          # 主頁
-├── journal.html        # 日記頁
 ├── works.html          # 作品集（Pixel 地圖）
+├── garden.html         # Garden channel 列表
+├── garden/_channel.html # Garden 單一 channel（/garden/:slug rewrite）
 ├── favicon.svg
 ├── css/
-│   └── style.css       # 唯一樣式檔（v8）
+│   ├── style.css       # 全站共用樣式
+│   ├── works.css       # works 頁專屬樣式
+│   └── garden.css      # garden 頁專屬樣式
 ├── js/
-│   ├── main.js         # 全域：雪花、Nav、Cursor、Prefetch、Typewriter（v4）
-│   ├── journal.js      # 日記：Supabase CRUD、Editorial Grid、Image Upload（v5）
-│   └── works.js        # 作品集：Canvas 地圖、Pins、Project Panel（v4）
+│   ├── main.js         # 全域：雪花、Nav、Cursor、Prefetch、Typewriter、Motion reveal
+│   ├── works.js        # 作品集：Canvas 地圖、Pins、Project Panel
+│   ├── garden.js / garden-channel.js  # Garden：Supabase 讀寫、block modal
+│   └── vendor/         # 自託管、鎖版本：motion-13.5.0.js、supabase-2.117.2.js
 ├── api/
-│   └── feed.js         # RSS feed（Vercel Serverless）
+│   └── og.js           # OG metadata 抓取（Vercel Serverless）
 ├── vercel.json         # Vercel 設定
 ├── sitemap.xml
 └── robots.txt
@@ -276,10 +261,15 @@ www.jaeggerjose.com/
 
 | 檔案 | 目前版本 |
 |---|---|
-| css/style.css | v11 |
-| js/main.js | v6 |
-| js/journal.js | v7 |
+| css/style.css | v13 |
+| css/works.css | v1 |
+| css/garden.css | v2 |
+| js/main.js | v10 |
 | js/works.js | v6 |
+| js/garden.js | v1 |
+| js/garden-channel.js | v2 |
+
+> vendor 檔以檔名帶版本（`motion-13.5.0.js`），不用 `?v=`。改檔後要 bump **每一頁**的引用，`/css/` 與 `/js/` 是 immutable 一年快取。
 
 ---
 
@@ -317,17 +307,15 @@ Halftone 疊加於雪国底層，模擬印刷油墨在和紙上的擴散感—�
 Card hover 時顯現細密 16px 苔綠點陣，增加懸停時的印刷翻頁手感。
 適用元件：`.stat-card:hover`、`.edu-card:hover`、`.skill-block:hover`
 
-### 13.5 Journal / Works 頁 Halftone
+### 13.5 Works 頁 Halftone
 
 | 元素 | 點陣 | 備註 |
 |------|------|------|
-| `#journal-hero` | 40px pixel-blue | 疊於 radial-gradient，`::before`/`::after` 保留給邊緣光線 |
-| `#journal-main` | 36px steam | 深暗底色的蒸氣點陣 |
 | `.project-panel`（works.html） | 32px pixel-blue | 因 canvas 遮蓋整頁，halftone 僅加在側邊 panel |
 
 ## 14. Garden 系統
 
-Garden 是 are.na 風格的 channel × block 收藏系統，跟 journal（LIFE）平行。
+Garden 是 are.na 風格的 channel × block 收藏系統。
 
 ### 14.1 資料模型
 - `garden_channels`：slug / title / summary / visibility(public|private) / position

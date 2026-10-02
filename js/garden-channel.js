@@ -10,6 +10,13 @@ function escapeHtml(s) {
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
+function hostOf(url) {
+  try { return new URL(url).host; } catch { return ''; }
+}
+// escapeHtml() alone can't stop javascript: URLs in href, so only allow http(s)
+function isHttpUrl(url) {
+  try { return ['http:', 'https:'].includes(new URL(url).protocol); } catch { return false; }
+}
 function setHTML(el, html) {
   el.replaceChildren(document.createRange().createContextualFragment(html));
 }
@@ -43,7 +50,7 @@ function renderBlockCard(b) {
   } else {
     inner = `<div class="block-note-preview">${escapeHtml(b.body || '')}</div>`;
   }
-  let foot = b.title || (b.type === 'link' && b.url ? new URL(b.url).host : b.type);
+  let foot = b.title || (b.type === 'link' && b.url ? hostOf(b.url) || b.type : b.type);
   return `<article class="garden-block-card" data-type="${b.type}" data-id="${b.id}">
     <span class="badge">${b.type.toUpperCase()}</span>
     <div class="block-actions" data-admin>
@@ -119,8 +126,10 @@ function openBlockModal(b) {
       hero = `<img class="modal-hero" src="${escapeHtml(b.og_image)}" alt="">`;
     }
     if (b.url) {
-      try { host = new URL(b.url).host; } catch {}
-      footRight = `<a class="modal-visit" href="${escapeHtml(b.url)}" target="_blank" rel="noopener noreferrer">VISIT ↗</a>`;
+      host = hostOf(b.url);
+      if (isHttpUrl(b.url)) {
+        footRight = `<a class="modal-visit" href="${escapeHtml(b.url)}" target="_blank" rel="noopener noreferrer">VISIT ↗</a>`;
+      }
     }
   } else if (b.type === 'image') {
     const url = sb.storage.from('garden-images').getPublicUrl(b.image_path).data.publicUrl;

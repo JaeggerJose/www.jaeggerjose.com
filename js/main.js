@@ -76,10 +76,18 @@ const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').mat
 /* ─── Custom Cursor ─── */
 const cursor = document.getElementById('cursor');
 if (cursor) {
+  let cursorX = 0, cursorY = 0, cursorQueued = false;
   document.addEventListener('mousemove', e => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top  = e.clientY + 'px';
-  });
+    cursorX = e.clientX;
+    cursorY = e.clientY;
+    if (cursorQueued) return;
+    cursorQueued = true;
+    requestAnimationFrame(() => {
+      cursorQueued = false;
+      // `translate` composes with the CSS transform (centering + click scale) and never triggers layout
+      cursor.style.translate = `${cursorX}px ${cursorY}px`;
+    });
+  }, { passive: true });
   document.addEventListener('mousedown', () => cursor.classList.add('click'));
   document.addEventListener('mouseup',   () => cursor.classList.remove('click'));
 }
@@ -91,30 +99,45 @@ const sections = ['hero','about','work','education','skills','contact'].map(
   id => document.getElementById(id)
 ).filter(Boolean);
 
-const heroEl = document.getElementById('hero') || document.getElementById('journal-hero');
+const heroEl = document.getElementById('hero');
 /* Pages with a light background and no dark hero (e.g. garden) keep the light nav */
 const lightNavPage = document.body.classList.contains('page-garden');
 
+/* Layout reads are cached and refreshed only when layout changes,
+   so the scroll handler never forces a synchronous reflow */
+let heroBottom = 0, navH = 0, sectionTops = [];
+function measureNav() {
+  heroBottom  = heroEl ? heroEl.offsetTop + heroEl.offsetHeight : 0;
+  navH        = nav.offsetHeight;
+  sectionTops = sections.map(s => s.offsetTop);
+}
+
 function onScroll() {
   if (!nav) return;
-  const heroBottom = heroEl ? heroEl.offsetTop + heroEl.offsetHeight : 0;
-  const navH       = nav.offsetHeight;
-  const pastHero   = lightNavPage || (heroEl != null && window.scrollY >= heroBottom - navH);
+  const y        = window.scrollY;
+  const pastHero = lightNavPage || (heroEl != null && y >= heroBottom - navH);
 
   // Dark nav over hero, light nav over content
-  nav.classList.toggle('scrolled', window.scrollY > 60 && !pastHero);
+  nav.classList.toggle('scrolled', y > 60 && !pastHero);
   nav.classList.toggle('on-light', pastHero);
 
   let current = '';
-  for (const s of sections) {
-    if (window.scrollY >= s.offsetTop - 220) current = s.id;
-  }
+  sections.forEach((s, i) => {
+    if (y >= sectionTops[i] - 220) current = s.id;
+  });
   navLinks.forEach(a =>
     a.classList.toggle('active', a.getAttribute('href') === '#' + current)
   );
 }
-window.addEventListener('scroll', onScroll, { passive: true });
-onScroll();
+
+if (nav) {
+  measureNav();
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  const navResizeObserver = new ResizeObserver(() => { measureNav(); onScroll(); });
+  navResizeObserver.observe(document.body);
+  navResizeObserver.observe(nav);
+}
 
 /* ─── Mobile menu ─── */
 const menuBtn    = document.getElementById('nav-menu');
@@ -199,7 +222,6 @@ function createSnow(canvasId, density, speed = 1, maxAlpha = 0.55) {
 
 createSnow('snow',         130, 1);
 createSnow('global-snow',  50,  0.5,  0.20);   /* 全頁輕雪：低透明度，不擋內容 */
-createSnow('journal-snow', 55,  0.65);
 createSnow('contact-snow', 60,  0.7);
 
 /* ─── Typewriter ─── */
@@ -237,28 +259,35 @@ if (twEl && REDUCED_MOTION) {
     }
     setTimeout(tick, deleting ? 32 : 72);
   }
-  setTimeout(tick, 2800);
+  setTimeout(tick, 1600); /* starts once the typewriter line has faded in (see .hero-typewriter) */
 }
 
-/* ─── IntersectionObserver: reveal animations ─── */
-const io = new IntersectionObserver(
-  entries => entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      io.unobserve(entry.target); // fire once
-      /* Drop the stagger delay once revealed, so theme-toggle color
-         transitions don't ripple card by card */
-      setTimeout(() => { entry.target.style.transitionDelay = ''; }, 1200);
-    }
-  }),
-  { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-);
+/* ─── Scroll reveal (Motion inView) ─── */
+const revealEls = document.querySelectorAll('.reveal');
+const motionLib = window.Motion;
 
-// Stagger sibling reveals within the same parent
-document.querySelectorAll('.reveal').forEach((el, i) => {
-  // Find position among siblings that also have .reveal
-  const siblings = [...el.parentElement.querySelectorAll('.reveal')];
-  const sibIdx   = siblings.indexOf(el);
-  el.style.transitionDelay = (sibIdx * 90) + 'ms';
-  io.observe(el);
-});
+if (!motionLib || REDUCED_MOTION) {
+  revealEls.forEach(el => el.classList.add('visible'));
+} else {
+  const { animate, inView } = motionLib;
+  revealEls.forEach(el => {
+    // Stagger by position among sibling .reveal elements in the same parent
+    const sibIdx = [...el.parentElement.querySelectorAll('.reveal')].indexOf(el);
+    const stop = inView(el, () => {
+      stop(); // fire once
+      animate(
+        el,
+        { opacity: 1, transform: 'translateY(0px)' },
+        { type: 'spring', bounce: 0, visualDuration: 0.55, delay: sibIdx * 0.09 }
+      ).then(() => {
+        // Hand control back to CSS so :hover transforms aren't shadowed by inline styles.
+        // Motion commits its final inline styles right after resolving, so clear one frame later.
+        el.classList.add('visible');
+        requestAnimationFrame(() => {
+          el.style.removeProperty('opacity');
+          el.style.removeProperty('transform');
+        });
+      });
+    }, { amount: 0.12, margin: '0px 0px -40px 0px' });
+  });
+}
