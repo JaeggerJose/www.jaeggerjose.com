@@ -1,5 +1,5 @@
 /* ============================================================
-   works.js — Works · Portfolio — Pixel World Map v3
+   works.js — Project index, pixel map, and shared project details
    ============================================================ */
 
 'use strict';
@@ -141,7 +141,7 @@ const PROJECTS = [
 ];
 
 /* ─── Pixel Map Canvas ─── */
-(function createPixelMap() {
+function createPixelMap() {
   const canvas = document.getElementById('map-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -433,17 +433,30 @@ const PROJECTS = [
     }
   }
 
-  resize();
-  window.addEventListener('resize', resize, { passive: true });
-
-  (function loop() {
+  const mapView = document.getElementById('map-view');
+  let frame = 0;
+  function loop() {
+    frame = 0;
+    if (mapView.hidden || document.hidden) return;
     t++;
     drawOcean();
     if (terrain) ctx.drawImage(terrain, 0, 0);
     drawAnimated();
-    requestAnimationFrame(loop);
-  })();
-})();
+    if (!motionPreference.matches) frame = requestAnimationFrame(loop);
+  }
+  function refresh() {
+    cancelAnimationFrame(frame);
+    frame = 0;
+    if (mapView.hidden || document.hidden) return;
+    resize();
+    loop();
+  }
+  window.addEventListener('resize', refresh, { passive: true });
+  document.addEventListener('visibilitychange', refresh);
+  motionPreference.addEventListener('change', refresh);
+  refresh();
+  return { refresh };
+}
 
 /* ─── Build Pins ─── */
 (function buildPins() {
@@ -456,6 +469,7 @@ const PROJECTS = [
     btn.style.left  = p.mapX + '%';
     btn.style.top   = p.mapY + '%';
     btn.setAttribute('aria-label', '開啟專案：' + p.title);
+    btn.setAttribute('aria-haspopup', 'dialog');
 
     const glow = document.createElement('span');
     glow.className = 'pin-glow';
@@ -477,94 +491,147 @@ const PROJECTS = [
   });
 })();
 
-/* ─── Panel ─── */
+/* ─── Project index and shared details ─── */
+const projectList = document.getElementById('project-list');
+const mapView = document.getElementById('map-view');
+const projectPanel = document.getElementById('project-panel');
+let activeView = 'list';
+let mapRenderer = null;
 let lastTrigger = null;
 
+function projectElement(tag, className, text) {
+  const element = document.createElement(tag);
+  if (className) element.className = className;
+  if (text !== undefined) element.textContent = text;
+  return element;
+}
+
+PROJECTS.slice().sort((a, b) => Number(b.year) - Number(a.year)).forEach((project, index) => {
+  const row = projectElement('article', 'project-row');
+  row.setAttribute('aria-labelledby', `project-${project.id}-title`);
+  const number = projectElement('span', 'project-number', String(index + 1).padStart(2, '0'));
+  number.setAttribute('aria-hidden', 'true');
+  const summary = projectElement('div', 'project-summary');
+  const title = projectElement('h2', 'project-title');
+  title.id = `project-${project.id}-title`;
+  const button = projectElement('button', '', project.title);
+  button.type = 'button';
+  button.dataset.pid = project.id;
+  button.setAttribute('aria-label', project.title);
+  button.setAttribute('aria-haspopup', 'dialog');
+  const arrow = projectElement('span', '', '↗');
+  arrow.setAttribute('aria-hidden', 'true');
+  button.append(arrow);
+  button.addEventListener('click', () => openPanel(project.id, button));
+  title.append(button);
+  const description = projectElement('p', 'project-description', project.desc);
+  description.lang = 'zh-TW';
+  summary.append(title, projectElement('p', 'project-sub', project.sub), description);
+  const aside = projectElement('div', 'project-aside');
+  const stack = projectElement('div', 'project-stack');
+  project.tech.slice(0, 3).forEach(tech => stack.append(projectElement('span', '', tech)));
+  const source = projectElement('a', 'project-source', 'GitHub ↗');
+  source.href = project.github;
+  source.target = '_blank';
+  source.rel = 'noopener noreferrer';
+  source.setAttribute('aria-label', `${project.title} on GitHub`);
+  aside.append(projectElement('span', 'project-year', project.year), stack, source);
+  row.append(number, summary, aside);
+  projectList.append(row);
+});
+document.getElementById('project-count').textContent = PROJECTS.length;
+document.querySelector('.works-toolbar').hidden = false;
+
+function setView(view, updateUrl = true) {
+  activeView = view === 'map' ? 'map' : 'list';
+  const isMap = activeView === 'map';
+  projectList.hidden = isMap;
+  mapView.hidden = !isMap;
+  document.querySelectorAll('[data-view]').forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.view === activeView));
+  });
+  if (isMap && !mapRenderer) mapRenderer = createPixelMap();
+  else mapRenderer?.refresh();
+  if (updateUrl) {
+    history.replaceState(null, '', location.pathname + location.search + (isMap ? '#map' : ''));
+  }
+}
+
+document.querySelectorAll('[data-view]').forEach(button => {
+  button.addEventListener('click', () => setView(button.dataset.view));
+});
+
 function openPanel(pid, trigger) {
-  const p = PROJECTS.find(x => x.id === pid);
-  if (!p) return;
-  lastTrigger = trigger || document.activeElement;
-  const panel   = document.getElementById('project-panel');
-  const body    = document.getElementById('panel-body');
-  const overlay = document.getElementById('map-overlay');
+  const project = PROJECTS.find(item => item.id === pid);
+  if (!project) return;
+  lastTrigger = trigger || projectList.querySelector(`[data-pid="${project.id}"]`);
+  const body = document.getElementById('panel-body');
+  body.replaceChildren();
 
-  while (body.firstChild) body.removeChild(body.firstChild);
-
-  const mk = (tag, cls, text) => {
-    const el = document.createElement(tag);
-    if (cls)  el.className   = cls;
-    if (text !== undefined) el.textContent = text;
-    return el;
-  };
-
-  const biomeEl = mk('p',  'panel-biome', p.sub.split('·')[0].trim().toUpperCase());
-  const yearEl  = mk('p',  'panel-year',  p.year);
-  const titleEl = mk('h2', 'panel-title', p.title);
-  const subEl   = mk('p',  'panel-sub',   p.sub);
-  const descEl  = mk('p',  'panel-desc',  p.desc);
-
-  const chips = mk('div', 'panel-chips');
-  p.tech.forEach(t => chips.appendChild(mk('span', 'chip', t)));
-
-  const gh = document.createElement('a');
-  gh.className   = 'panel-gh';
-  gh.href        = p.github;
-  gh.target      = '_blank';
-  gh.rel         = 'noopener noreferrer';
-  gh.textContent = 'View on GitHub →';
-
-  // Color accent bar
-  const accent = mk('div', 'panel-accent');
-  accent.style.background = `linear-gradient(90deg, ${p.pinColor}44, transparent)`;
-  accent.style.borderLeft = `3px solid ${p.pinColor}`;
-
-  body.append(accent, biomeEl, yearEl, titleEl, subEl, descEl, chips, gh);
-  panel.classList.add('open');
-  panel.setAttribute('aria-hidden', 'false');
-  if (overlay) overlay.classList.add('visible');
-  document.getElementById('panel-close')?.focus();
+  const accent = projectElement('div', 'panel-accent');
+  accent.style.background = project.pinColor;
+  const title = projectElement('h2', 'panel-title', project.title);
+  title.id = 'panel-title';
+  const description = projectElement('p', 'panel-desc', project.desc);
+  description.id = 'panel-desc';
+  description.lang = 'zh-TW';
+  const chips = projectElement('div', 'panel-chips');
+  project.tech.forEach(tech => chips.append(projectElement('span', 'chip', tech)));
+  const github = projectElement('a', 'panel-gh', 'View on GitHub');
+  github.href = project.github;
+  github.target = '_blank';
+  github.rel = 'noopener noreferrer';
+  const arrow = projectElement('span', '', '↗');
+  arrow.setAttribute('aria-hidden', 'true');
+  github.append(arrow);
+  body.append(
+    accent,
+    projectElement('p', 'panel-biome', project.sub.split('·')[0].trim().toUpperCase()),
+    projectElement('p', 'panel-year', project.year),
+    title,
+    projectElement('p', 'panel-sub', project.sub),
+    description,
+    chips,
+    github,
+  );
+  if (!projectPanel.open) projectPanel.showModal();
+  projectPanel.scrollTop = 0;
+  document.body.classList.add('project-is-open');
+  history.replaceState(null, '', location.pathname + location.search + `#${project.id}`);
+  document.getElementById('panel-close').focus({ preventScroll: true });
 }
 
 function closePanel() {
-  const panel = document.getElementById('project-panel');
-  if (!panel || !panel.classList.contains('open')) return;
-  panel.classList.remove('open');
-  panel.setAttribute('aria-hidden', 'true');
-  document.getElementById('map-overlay')?.classList.remove('visible');
-  if (lastTrigger) { lastTrigger.focus(); lastTrigger = null; }
+  if (projectPanel.open) projectPanel.close();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('panel-close')?.addEventListener('click', closePanel);
-  document.getElementById('map-overlay')?.addEventListener('click', closePanel);
-  document.addEventListener('keydown', e => {
-    const panel = document.getElementById('project-panel');
-    if (!panel || !panel.classList.contains('open')) return;
-    if (e.key === 'Escape') { closePanel(); return; }
-    // Focus trap: keep Tab cycling inside the open panel
-    if (e.key === 'Tab') {
-      const focusable = panel.querySelectorAll('button, a[href]');
-      if (!focusable.length) return;
-      const first = focusable[0];
-      const last  = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    }
-  });
-
-  // Sync works-wrap top offset to actual nav height (nav height varies by viewport)
-  const nav  = document.getElementById('nav');
-  const wrap = document.querySelector('.works-wrap');
-  if (nav && wrap) {
-    function syncNavOffset() {
-      const h = nav.offsetHeight;
-      wrap.style.marginTop = h + 'px';
-      wrap.style.height    = 'calc(100svh - ' + h + 'px)';
-      // Keep panel-close below nav
-      const closeBtn = document.getElementById('panel-close');
-      if (closeBtn) closeBtn.style.top = (h + 8) + 'px';
-    }
-    syncNavOffset();
-    window.addEventListener('resize', syncNavOffset, { passive: true });
-  }
+document.getElementById('panel-close').addEventListener('click', closePanel);
+projectPanel.addEventListener('click', event => {
+  if (event.target !== projectPanel) return;
+  const bounds = projectPanel.getBoundingClientRect();
+  if (event.clientX < bounds.left || event.clientX > bounds.right ||
+      event.clientY < bounds.top || event.clientY > bounds.bottom) closePanel();
 });
+projectPanel.addEventListener('close', () => {
+  document.body.classList.remove('project-is-open');
+  history.replaceState(null, '', location.pathname + location.search + (activeView === 'map' ? '#map' : ''));
+  if (lastTrigger?.isConnected && lastTrigger.getClientRects().length) lastTrigger.focus();
+  else document.getElementById('works-main').focus({ preventScroll: true });
+  lastTrigger = null;
+});
+
+function openLocation() {
+  const id = location.hash.slice(1);
+  if (id === 'map') {
+    setView('map', false);
+    closePanel();
+  } else if (PROJECTS.some(project => project.id === id)) {
+    openPanel(id);
+  } else if (!id) {
+    setView('list', false);
+    closePanel();
+  }
+}
+setView('list', false);
+openLocation();
+window.addEventListener('hashchange', openLocation);
