@@ -7,3 +7,17 @@ TODO.md
 .DS_Store
 node_modules/
 .vercel
+
+# Local agent skills and settings
+.claude/
+skills-lock.json
+
+# Local design documents and plans
+/docs/
+
+# Local browser verification and Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+playwright-report/
+test-results/

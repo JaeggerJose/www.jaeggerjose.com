@@ -1,293 +1,181 @@
-/* ============================================================
-   main.js — 廖明軒 · Ming-Hsuan Liao Personal Site
-   ============================================================ */
-
+/* Shared behavior — theme, navigation, progressive enhancement. */
 'use strict';
 
-const REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+const REDUCED_MOTION = motionPreference.matches;
 
-/* ─── Page Transitions + Hover Prefetch ─── */
-(function () {
-  /* Hover prefetch: browser gets 150-300ms head start before click */
-  const prefetched = new Set();
-  document.addEventListener('mouseover', e => {
-    const a = e.target.closest('a[href]');
-    if (!a || a.target === '_blank') return;
-    const { href } = a;
-    if (!href || prefetched.has(href)) return;
-    try {
-      const u = new URL(href);
-      if (u.origin !== location.origin || u.pathname === location.pathname) return;
-    } catch { return; }
-    prefetched.add(href);
-    const link = document.createElement('link');
-    link.rel = 'prefetch'; link.href = href;
-    document.head.appendChild(link);
-  }, { passive: true });
-
-  /* CSS @view-transition handles animation in modern browsers.
-     Only apply JS opacity fallback for browsers without support. */
-  if ('startViewTransition' in document) return;
-
-  document.addEventListener('click', e => {
-    const a = e.target.closest('a[href]');
-    if (!a) return;
-    const href = a.getAttribute('href') || '';
-    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:') || a.target === '_blank') return;
-    try {
-      const dest = new URL(href, location.href);
-      if (dest.origin !== location.origin) return;
-      if (dest.pathname === location.pathname && !dest.search) return;
-    } catch { return; }
-    e.preventDefault();
-    document.body.style.opacity = '0';
-    setTimeout(() => { location.href = a.href; }, 260);
-  });
-})();
-
-/* ─── Day / Night Mode ─── */
-(function () {
+/* A saved preference is optional; blocked storage must not break navigation. */
+(function themeControls() {
   const html = document.documentElement;
-  const saved = localStorage.getItem('theme') || 'light';
-  html.dataset.theme = saved;
+  try {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light' || saved === 'dark') html.dataset.theme = saved;
+  } catch { /* Private/storage-restricted browsers keep the page's default. */ }
+  if (!['light', 'dark'].includes(html.dataset.theme)) html.dataset.theme = 'light';
 
+  const buttons = document.querySelectorAll('#theme-toggle, #theme-toggle-mm');
   function updateLabels() {
-    const label = html.dataset.theme === 'dark' ? '◑ DAY' : '◐ NGT';
-    document.querySelectorAll('#theme-toggle, #theme-toggle-mm').forEach(btn => {
-      if (btn) btn.textContent = label;
+    const dark = html.dataset.theme === 'dark';
+    buttons.forEach(button => {
+      button.textContent = dark ? '◑ Light' : '◐ Dark';
+      button.setAttribute('aria-label', `Switch to ${dark ? 'light' : 'dark'} theme`);
+      button.setAttribute('aria-pressed', String(dark));
     });
   }
-
-  function toggleTheme() {
+  buttons.forEach(button => button.addEventListener('click', () => {
     const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
     html.dataset.theme = next;
-    localStorage.setItem('theme', next);
+    try { localStorage.setItem('theme', next); } catch { /* Theme still works in memory. */ }
     updateLabels();
-  }
+  }));
+  updateLabels();
+})();
 
-  document.addEventListener('DOMContentLoaded', () => {
-    updateLabels();
-    document.querySelectorAll('#theme-toggle, #theme-toggle-mm').forEach(btn => {
-      btn?.addEventListener('click', toggleTheme);
+/* Prefetch same-origin pages when there is an intent to navigate. */
+(function prefetchLinks() {
+  const prefetched = new Set();
+  document.addEventListener('mouseover', event => {
+    const anchor = event.target.closest('a[href]');
+    if (!anchor || anchor.target === '_blank' || prefetched.has(anchor.href)) return;
+    const url = new URL(anchor.href, location.href);
+    if (url.origin !== location.origin || url.pathname === location.pathname) return;
+    prefetched.add(anchor.href);
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.href = anchor.href;
+    document.head.appendChild(link);
+  }, { passive: true });
+})();
+
+/* Cache section positions when layout changes, not during scroll. */
+(function navigationState() {
+  const nav = document.getElementById('nav');
+  if (!nav) return;
+  const links = [...nav.querySelectorAll('.nav-links a')];
+  const sections = [...document.querySelectorAll('.page-home main section[id]')];
+  let positions = [];
+  let queued = false;
+
+  function update() {
+    queued = false;
+    if (!positions.length) return; // Keep the explicit active link on other pages.
+    let current = '';
+    for (const section of positions) {
+      if (window.scrollY + nav.offsetHeight + 100 >= section.top) current = section.id;
+    }
+    if (current === 'education' || current === 'skills') current = 'work';
+    links.forEach(link => {
+      const active = link.getAttribute('href') === `#${current}`;
+      link.classList.toggle('active', active);
+      if (active) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
     });
+  }
+  function measure() {
+    document.documentElement.style.setProperty('--nav-height', `${nav.offsetHeight}px`);
+    positions = sections.map(section => ({
+      id: section.id,
+      top: section.getBoundingClientRect().top + window.scrollY,
+    }));
+    update();
+  }
+  measure();
+  const observer = new ResizeObserver(measure);
+  observer.observe(nav);
+  observer.observe(document.body);
+  window.addEventListener('scroll', () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(update);
+  }, { passive: true });
+  document.fonts?.ready.then(measure);
+})();
+
+/* A mobile menu has the same keyboard behavior as its visible affordance. */
+(function mobileNavigation() {
+  const toggle = document.getElementById('nav-menu');
+  const menu = document.getElementById('mobile-menu');
+  if (!toggle || !menu) return;
+  const background = [...document.querySelectorAll('main, body > footer')];
+  let open = false;
+
+  function setOpen(next, restoreFocus = true) {
+    open = next;
+    menu.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    document.body.classList.toggle('menu-is-open', open);
+    background.forEach(element => { element.inert = open; });
+    if (open) menu.querySelector('a')?.focus();
+    else if (restoreFocus) toggle.focus();
+  }
+  toggle.setAttribute('aria-controls', menu.id);
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.setAttribute('aria-label', 'Open menu');
+  menu.hidden = true;
+  toggle.addEventListener('click', () => setOpen(!open));
+  menu.querySelectorAll('a[href]').forEach(link => {
+    link.addEventListener('click', () => {
+      setOpen(false, false);
+      const url = new URL(link.href);
+      if (url.pathname === location.pathname && url.hash) {
+        const target = document.getElementById(url.hash.slice(1));
+        if (target) {
+          target.setAttribute('tabindex', '-1');
+          target.focus({ preventScroll: true });
+        }
+      }
+    });
+  });
+  document.addEventListener('keydown', event => {
+    if (!open) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      setOpen(false);
+    } else if (event.key === 'Tab') {
+      const focusable = [toggle, ...menu.querySelectorAll('a[href], button')];
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+  });
+  window.matchMedia('(min-width: 861px)').addEventListener('change', event => {
+    if (event.matches && open) {
+      setOpen(false, false);
+      document.querySelector('.nav-logo')?.focus();
+    }
   });
 })();
 
-/* ─── Custom Cursor ─── */
-const cursor = document.getElementById('cursor');
-if (cursor) {
-  let cursorX = 0, cursorY = 0, cursorQueued = false;
-  document.addEventListener('mousemove', e => {
-    cursorX = e.clientX;
-    cursorY = e.clientY;
-    if (cursorQueued) return;
-    cursorQueued = true;
-    requestAnimationFrame(() => {
-      cursorQueued = false;
-      // `translate` composes with the CSS transform (centering + click scale) and never triggers layout
-      cursor.style.translate = `${cursorX}px ${cursorY}px`;
-    });
-  }, { passive: true });
-  document.addEventListener('mousedown', () => cursor.classList.add('click'));
-  document.addEventListener('mouseup',   () => cursor.classList.remove('click'));
-}
-
-/* ─── Nav: scroll class + active link ─── */
-const nav      = document.getElementById('nav');
-const navLinks = nav ? [...nav.querySelectorAll('.nav-links a')] : [];
-const sections = ['hero','about','work','education','skills','contact'].map(
-  id => document.getElementById(id)
-).filter(Boolean);
-
-const heroEl = document.getElementById('hero');
-/* Pages with a light background and no dark hero (e.g. garden) keep the light nav */
-const lightNavPage = document.body.classList.contains('page-garden');
-
-/* Layout reads are cached and refreshed only when layout changes,
-   so the scroll handler never forces a synchronous reflow */
-let heroBottom = 0, navH = 0, sectionTops = [];
-function measureNav() {
-  heroBottom  = heroEl ? heroEl.offsetTop + heroEl.offsetHeight : 0;
-  navH        = nav.offsetHeight;
-  sectionTops = sections.map(s => s.offsetTop);
-}
-
-function onScroll() {
-  if (!nav) return;
-  const y        = window.scrollY;
-  const pastHero = lightNavPage || (heroEl != null && y >= heroBottom - navH);
-
-  // Dark nav over hero, light nav over content
-  nav.classList.toggle('scrolled', y > 60 && !pastHero);
-  nav.classList.toggle('on-light', pastHero);
-
-  let current = '';
-  sections.forEach((s, i) => {
-    if (y >= sectionTops[i] - 220) current = s.id;
-  });
-  navLinks.forEach(a =>
-    a.classList.toggle('active', a.getAttribute('href') === '#' + current)
-  );
-}
-
-if (nav) {
-  measureNav();
-  onScroll();
-  window.addEventListener('scroll', onScroll, { passive: true });
-  const navResizeObserver = new ResizeObserver(() => { measureNav(); onScroll(); });
-  navResizeObserver.observe(document.body);
-  navResizeObserver.observe(nav);
-}
-
-/* ─── Mobile menu ─── */
-const menuBtn    = document.getElementById('nav-menu');
-const mobileMenu = document.getElementById('mobile-menu');
-
-if (menuBtn && mobileMenu) {
-  menuBtn.addEventListener('click', () => {
-    const open = mobileMenu.classList.toggle('open');
-    nav?.classList.toggle('menu-open', open);
-  });
-  mobileMenu.querySelectorAll('.mm-link').forEach(link => {
-    link.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      nav?.classList.remove('menu-open');
-    });
-  });
-}
-
-/* ─── Smooth scroll for anchor links ─── */
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    const target = document.querySelector(a.getAttribute('href'));
-    if (target) {
-      e.preventDefault();
-      target.scrollIntoView({ behavior: REDUCED_MOTION ? 'auto' : 'smooth' });
-    }
-  });
-});
-
-/* ─── Pixel Snow Canvas ─── */
-function createSnow(canvasId, density, speed = 1, maxAlpha = 0.55) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let W = 0, H = 0;
-  const flakes = [];
-
-  // Pixel-art sizes: snapped to 2px grid
-  const SIZES = [2, 2, 2, 4, 4, 6];
-
-  function resize() {
-    W = canvas.width  = canvas.offsetWidth  || window.innerWidth;
-    H = canvas.height = canvas.offsetHeight || window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize, { passive: true });
-
-  for (let i = 0; i < density; i++) {
-    flakes.push({
-      x:   Math.random() * W,
-      y:   Math.random() * H,
-      s:   SIZES[Math.floor(Math.random() * SIZES.length)],
-      vy:  (0.25 + Math.random() * 0.6) * speed,
-      vx:  (Math.random() - 0.5) * 0.18,
-      drift:      Math.random() * Math.PI * 2,
-      driftSpeed: 0.006 + Math.random() * 0.01,
-      alpha: 0.08 + Math.random() * maxAlpha,
-    });
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    for (const f of flakes) {
-      f.drift += f.driftSpeed;
-      f.x += f.vx + Math.sin(f.drift) * 0.28;
-      f.y += f.vy;
-      if (f.y > H + 8) { f.y = -8; f.x = Math.random() * W; }
-      if (f.x < -8)    f.x = W + 8;
-      if (f.x > W + 8) f.x = -8;
-
-      // Snap to 2-pixel grid for pixel-art feel
-      const px = Math.round(f.x / 2) * 2;
-      const py = Math.round(f.y / 2) * 2;
-
-      ctx.fillStyle = `rgba(220, 232, 255, ${f.alpha})`;
-      ctx.fillRect(px, py, f.s, f.s);
-    }
-    if (!REDUCED_MOTION) requestAnimationFrame(draw);
-  }
-  draw(); /* reduced motion: single static frame keeps the atmosphere */
-}
-
-createSnow('snow',         130, 1);
-createSnow('global-snow',  50,  0.5,  0.20);   /* 全頁輕雪：低透明度，不擋內容 */
-createSnow('contact-snow', 60,  0.7);
-
-/* ─── Typewriter ─── */
-const phrases = [
-  'FULL-STACK ENGINEER',
-  'MSc · NYCU TAIWAN',
-  '雪国の開発者',
-  'IEEE PUBLISHED · 2023',
-  'PARIS · HSINCHU · BEYOND',
-  'OPEN TO OPPORTUNITIES',
-];
-
-const twEl = document.getElementById('tw-text');
-if (twEl && REDUCED_MOTION) {
-  twEl.textContent = phrases[0];
-} else if (twEl) {
-  let pIdx = 0, cIdx = 0, deleting = false, waiting = false;
-
-  function tick() {
-    if (waiting) return;
-    const phrase = phrases[pIdx];
-    if (!deleting) {
-      twEl.textContent = phrase.slice(0, ++cIdx);
-      if (cIdx === phrase.length) {
-        waiting = true;
-        setTimeout(() => { waiting = false; deleting = true; tick(); }, 1800);
-        return;
-      }
-    } else {
-      twEl.textContent = phrase.slice(0, --cIdx);
-      if (cIdx === 0) {
-        deleting = false;
-        pIdx = (pIdx + 1) % phrases.length;
-      }
-    }
-    setTimeout(tick, deleting ? 32 : 72);
-  }
-  setTimeout(tick, 1600); /* starts once the typewriter line has faded in (see .hero-typewriter) */
-}
-
-/* ─── Scroll reveal (Motion inView) ─── */
-const revealEls = document.querySelectorAll('.reveal');
-const motionLib = window.Motion;
-
-if (!motionLib || REDUCED_MOTION) {
-  revealEls.forEach(el => el.classList.add('visible'));
-} else {
-  const { animate, inView } = motionLib;
-  revealEls.forEach(el => {
-    // Stagger by position among sibling .reveal elements in the same parent
-    const sibIdx = [...el.parentElement.querySelectorAll('.reveal')].indexOf(el);
-    const stop = inView(el, () => {
-      stop(); // fire once
-      animate(
-        el,
-        { opacity: 1, transform: 'translateY(0px)' },
-        { type: 'spring', bounce: 0, visualDuration: 0.55, delay: sibIdx * 0.09 }
-      ).then(() => {
-        // Hand control back to CSS so :hover transforms aren't shadowed by inline styles.
-        // Motion commits its final inline styles right after resolving, so clear one frame later.
-        el.classList.add('visible');
+/* Content is visible by default, including without JS or the optional library. */
+(function revealContent() {
+  const elements = document.querySelectorAll('.reveal');
+  if (!window.Motion || motionPreference.matches) return;
+  const { animate, inView } = window.Motion;
+  elements.forEach(element => {
+    element.classList.add('will-reveal');
+    const siblings = [...element.parentElement.querySelectorAll(':scope > .reveal')];
+    const index = siblings.indexOf(element);
+    const stop = inView(element, () => {
+      stop();
+      animate(element, { opacity: 1, transform: 'translateY(0px)' }, {
+        type: 'spring', bounce: 0, visualDuration: .5, delay: Math.max(0, index) * .07,
+      }).then(() => {
+        element.classList.add('visible');
         requestAnimationFrame(() => {
-          el.style.removeProperty('opacity');
-          el.style.removeProperty('transform');
+          element.style.removeProperty('opacity');
+          element.style.removeProperty('transform');
         });
       });
-    }, { amount: 0.12, margin: '0px 0px -40px 0px' });
+    }, { amount: .08, margin: '0px 0px -24px 0px' });
   });
-}
+  motionPreference.addEventListener('change', event => {
+    if (event.matches) elements.forEach(element => element.classList.add('visible'));
+  });
+})();

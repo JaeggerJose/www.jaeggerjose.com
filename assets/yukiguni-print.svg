@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="660" viewBox="0 0 640 660" fill="none">
+  <title>Snow country — a winter woodblock landscape</title>
+  <desc>Layered snow-covered mountains, a rust-red winter sun, and a small warm cabin among dark pine trees.</desc>
+  <defs>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".78" numOctaves="3" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix in="noise" type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope=".13"/></feComponentTransfer>
+      <feBlend in="SourceGraphic" mode="multiply"/>
+    </filter>
+    <pattern id="sky-grain" width="7" height="7" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r=".65" fill="#405d60" opacity=".13"/>
+    </pattern>
+    <pattern id="ridge-lines" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-24)">
+      <path d="M0 0V7" stroke="#405b5d" stroke-opacity=".21" stroke-width="1"/>
+    </pattern>
+    <g id="pine">
+      <path d="M0-44L-11-24H-7L-17-7H-11L-23 12H23L11-7H17L7-24H11L0-44Z" fill="currentColor"/>
+      <path d="M-2 8H2V22H-2Z" fill="currentColor"/>
+      <path d="M0-44L-10-26H0L-6-24H4L0-44ZM-7-9L-15-7H-2L-7-9ZM-11 10L-20 12H-5L-11 10Z" fill="#d9e1d7" opacity=".65"/>
+    </g>
+  </defs>
+  <g filter="url(#grain)">
+    <path fill="#d6ddd2" d="M0 0H640V660H0z"/>
+    <path fill="url(#sky-grain)" d="M0 0H640V420H0z"/>
+    <circle cx="446" cy="153" r="43" fill="#ae533c"/>
+    <path d="M0 278L72 256L112 274L175 227L204 239L276 176L318 211L346 201L428 261L482 225L547 265L602 232L640 253V484H0V278Z" fill="#aebfb4"/>
+    <path d="M0 331L50 310L103 323L160 279L202 299L267 249L307 269L335 252L398 304L434 293L483 321L535 301L588 328L640 310V485H0V331Z" fill="#8ca69e"/>
+    <path d="M0 440L40 414L103 393L152 338L184 350L278 207L300 228L344 299L374 277L448 373L480 358L539 428L586 401L640 437V596H0V440Z" fill="#446467"/>
+    <path d="M103 393L152 338L184 350L278 207L300 228L344 299L374 277L448 373L408 350L384 326L375 340L353 326L336 343L313 289L299 299L282 263L266 292L252 282L227 330L209 329L190 371L171 363L156 389L142 381L103 393Z" fill="#f0eee0"/>
+    <path d="M278 207L278 247L266 278L272 302L254 348L270 330L282 291L289 303L300 281L290 253L300 228L278 207Z" fill="#b3c3b6"/>
+    <path d="M374 277L358 317L369 314L385 343L382 324L394 330L374 277Z" fill="#b3c3b6"/>
+    <path d="M184 350L150 415L168 402L186 383L199 381L222 352L207 366L184 350Z" fill="#cbd5c8"/>
+    <path d="M0 440L40 414L103 393L152 338L184 350L278 207L300 228L344 299L374 277L448 373L480 358L539 428L586 401L640 437V596H0V440Z" fill="url(#ridge-lines)"/>
+    <path d="M0 485C68 457 102 469 166 441C221 417 257 426 314 452C389 487 461 425 506 443C558 464 591 447 640 428V660H0V485Z" fill="#dce3d6"/>
+    <path d="M0 521C67 495 133 527 194 502C264 473 333 518 386 498C454 472 510 488 571 470C599 462 622 462 640 467V660H0V521Z" fill="#91a89c"/>
+    <path d="M0 552C91 509 173 567 243 540C320 510 359 553 427 526C505 495 557 518 640 486V660H0V552Z" fill="#476b63"/>
+    <g color="#526f66">
+      <use href="#pine" transform="translate(36 496) scale(.58)"/>
+      <use href="#pine" transform="translate(68 492) scale(.77)"/>
+      <use href="#pine" transform="translate(94 489) scale(.5)"/>
+      <use href="#pine" transform="translate(151 477) scale(.47)"/>
+      <use href="#pine" transform="translate(177 464) scale(.7)"/>
+      <use href="#pine" transform="translate(201 468) scale(.42)"/>
+      <use href="#pine" transform="translate(340 477) scale(.48)"/>
+      <use href="#pine" transform="translate(368 478) scale(.64)"/>
+      <use href="#pine" transform="translate(541 470) scale(.65)"/>
+      <use href="#pine" transform="translate(568 464) scale(.42)"/>
+      <use href="#pine" transform="translate(597 452) scale(.75)"/>
+      <use href="#pine" transform="translate(625 456) scale(.5)"/>
+    </g>
+    <path d="M458 491C467 510 473 520 447 539C423 557 361 557 353 579C343 607 421 614 399 660H313C349 625 290 610 318 576C340 549 412 542 431 526C446 513 440 507 441 496L458 491Z" fill="#e4e7d9"/>
+    <path d="M446 502C463 522 435 541 402 550M345 578C332 596 355 610 358 626" stroke="#b1c4b4" stroke-width="2"/>
+    <path d="M411 487H464V515H411Z" fill="#294841"/>
+    <path d="M402 490L428 469L475 491H402Z" fill="#a7503b"/>
+    <path d="M402 490L428 466L475 489H467L428 475L411 490H402Z" fill="#edecdc"/>
+    <path d="M433 496H442V508H433ZM449 496H458V506H449Z" fill="#e8bd70"/>
+    <path d="M417 501H424V515H417Z" fill="#142f2c"/>
+    <path d="M451 466H456V480H451Z" fill="#294841"/>
+    <path d="M454 463C467 449 446 445 458 431" stroke="#eef0e3" stroke-opacity=".7" stroke-width="3" stroke-linecap="round"/>
+    <g color="#274b44">
+      <use href="#pine" transform="translate(12 562) scale(1.1)"/>
+      <use href="#pine" transform="translate(50 547) scale(1.34)"/>
+      <use href="#pine" transform="translate(97 564) scale(.9)"/>
+      <use href="#pine" transform="translate(139 549) scale(1.2)"/>
+      <use href="#pine" transform="translate(181 565) scale(.72)"/>
+      <use href="#pine" transform="translate(218 548) scale(.94)"/>
+      <use href="#pine" transform="translate(252 560) scale(.63)"/>
+      <use href="#pine" transform="translate(498 548) scale(.98)"/>
+      <use href="#pine" transform="translate(537 546) scale(1.25)"/>
+      <use href="#pine" transform="translate(590 524) scale(.9)"/>
+      <use href="#pine" transform="translate(628 538) scale(1.45)"/>
+    </g>
+    <path d="M0 596C97 559 165 595 245 585L276 600L256 660H0V596ZM434 612C479 575 558 592 640 556V660H421L434 612Z" fill="#1c3b37"/>
+    <g color="#183631">
+      <use href="#pine" transform="translate(8 645) scale(1.5)"/>
+      <use href="#pine" transform="translate(83 627) scale(1.8)"/>
+      <use href="#pine" transform="translate(158 642) scale(1.35)"/>
+      <use href="#pine" transform="translate(222 619) scale(1.05)"/>
+      <use href="#pine" transform="translate(481 633) scale(1.35)"/>
+      <use href="#pine" transform="translate(554 630) scale(1.65)"/>
+      <use href="#pine" transform="translate(630 643) scale(1.9)"/>
+    </g>
+    <g fill="#f3f0e1" opacity=".68">
+      <path d="M46 357h2v2h-2zM86 426h3v3h-3zM118 190h2v2h-2zM147 533h3v3h-3zM192 394h2v2h-2zM224 174h2v2h-2zM250 482h3v3h-3zM310 389h2v2h-2zM327 113h2v2h-2zM365 532h3v3h-3zM405 248h2v2h-2zM433 406h3v3h-3zM485 337h2v2h-2zM523 253h2v2h-2zM578 389h3v3h-3zM603 160h2v2h-2zM292 564h2v2h-2zM509 595h3v3h-3zM65 570h2v2h-2z"/>
+    </g>
+  </g>
+</svg>
