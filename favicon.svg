@@ -1,19 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" fill="#070d1c"/>
-  <!-- Pixel snowflake / MHL monogram -->
-  <rect x="14" y="2"  width="4" height="4" fill="#3dd6c8"/>
-  <rect x="14" y="10" width="4" height="4" fill="#3dd6c8"/>
-  <rect x="14" y="18" width="4" height="4" fill="#3dd6c8"/>
-  <rect x="14" y="26" width="4" height="4" fill="#3dd6c8"/>
-  <rect x="2"  y="14" width="4" height="4" fill="#3dd6c8"/>
-  <rect x="10" y="14" width="4" height="4" fill="#3dd6c8"/>
-  <rect x="18" y="14" width="4" height="4" fill="#3dd6c8"/>
-  <rect x="26" y="14" width="4" height="4" fill="#3dd6c8"/>
-  <!-- Diagonals -->
-  <rect x="6"  y="6"  width="4" height="4" fill="#3dd6c8" opacity="0.6"/>
-  <rect x="22" y="6"  width="4" height="4" fill="#3dd6c8" opacity="0.6"/>
-  <rect x="6"  y="22" width="4" height="4" fill="#3dd6c8" opacity="0.6"/>
-  <rect x="22" y="22" width="4" height="4" fill="#3dd6c8" opacity="0.6"/>
-  <!-- Center -->
-  <rect x="14" y="14" width="4" height="4" fill="#dce8ff"/>
+  <title>Yukiguni — snow mountain and winter sun</title>
+  <rect width="32" height="32" rx="6" fill="#f5f2e9"/>
+  <circle cx="24" cy="9" r="4" fill="#a44c36"/>
+  <path d="M3 26L13 9L20 20L24 15L29 26Z" fill="#293d31"/>
+  <path d="M13 9L8 17L12 16L14 18L16 16L13 9Z" fill="#f1f0e4"/>
+  <path d="M20 20L24 15L29 26H24Z" fill="#496b50"/>
 </svg>
