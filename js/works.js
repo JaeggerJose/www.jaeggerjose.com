@@ -138,6 +138,17 @@ const PROJECTS = [
     pinColor: '#e08050',
     mapX: 50, mapY: 14,
   },
+  {
+    id: 'subway',
+    title: 'Tokyo Subway Challenge',
+    sub: 'Web Game · Interactive Map',
+    year: '2026',
+    desc: '「東京の地下鉄、何駅言える？」——不看路線圖，挑戰說出東京 Metro＋都營地下鐵全 216 站的網頁遊戲。提供記憶模式與四選一測驗，可用漢字、平假名、羅馬字或中文作答，並以互動地圖顯示各路線達成度，支援日／中／英三語。',
+    tech: ['JavaScript', 'Interactive Map', 'i18n', 'Supabase'],
+    url: 'https://tokyo-subway.jaeggerjose.com',
+    pinColor: '#e86f9a',
+    mapX: 30, mapY: 54,
+  },
 ];
 
 /* ─── Pixel Map Canvas ─── */
@@ -530,11 +541,11 @@ PROJECTS.slice().sort((a, b) => Number(b.year) - Number(a.year)).forEach((projec
   const aside = projectElement('div', 'project-aside');
   const stack = projectElement('div', 'project-stack');
   project.tech.slice(0, 3).forEach(tech => stack.append(projectElement('span', '', tech)));
-  const source = projectElement('a', 'project-source', 'GitHub ↗');
-  source.href = project.github;
+  const source = projectElement('a', 'project-source', project.url ? 'Live ↗' : 'GitHub ↗');
+  source.href = project.url || project.github;
   source.target = '_blank';
   source.rel = 'noopener noreferrer';
-  source.setAttribute('aria-label', `${project.title} on GitHub`);
+  source.setAttribute('aria-label', project.url ? `Visit ${project.title}` : `${project.title} on GitHub`);
   aside.append(projectElement('span', 'project-year', project.year), stack, source);
   row.append(number, summary, aside);
   projectList.append(row);
@@ -577,8 +588,8 @@ function openPanel(pid, trigger) {
   description.lang = 'zh-TW';
   const chips = projectElement('div', 'panel-chips');
   project.tech.forEach(tech => chips.append(projectElement('span', 'chip', tech)));
-  const github = projectElement('a', 'panel-gh', 'View on GitHub');
-  github.href = project.github;
+  const github = projectElement('a', 'panel-gh', project.url ? 'Visit site' : 'View on GitHub');
+  github.href = project.url || project.github;
   github.target = '_blank';
   github.rel = 'noopener noreferrer';
   const arrow = projectElement('span', '', '↗');
