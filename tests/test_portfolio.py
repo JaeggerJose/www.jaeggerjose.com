@@ -70,9 +70,21 @@ class PortfolioTests(unittest.TestCase):
             "href", "https://github.com/jaeggerjose/tokyo-train-board"
         )
 
+    def test_live_project_links_to_its_site(self):
+        self.visit("/works.html")
+        live_url = "https://tokyo-subway.jaeggerjose.com"
+        expect(
+            self.page.get_by_role("link", name="Visit Tokyo Subway Challenge")
+        ).to_have_attribute("href", live_url)
+        self.page.get_by_role("button", name="Tokyo Subway Challenge", exact=True).click()
+        dialog = self.page.get_by_role("dialog", name="Tokyo Subway Challenge")
+        expect(dialog.get_by_role("link", name="Visit site")).to_have_attribute(
+            "href", live_url
+        )
+
     def test_project_index_and_escape_restore_focus(self):
         self.visit("/works.html")
-        expect(self.page.locator("#project-list .project-row")).to_have_count(12)
+        expect(self.page.locator("#project-list .project-row")).to_have_count(13)
         trigger = self.page.get_by_role(
             "button", name="SLURM Backfill Enhancement", exact=True
         )
@@ -153,7 +165,7 @@ class PortfolioTests(unittest.TestCase):
     def test_mobile_project_titles_fit_the_viewport(self):
         self.page.set_viewport_size({"width": 390, "height": 844})
         self.visit("/works.html")
-        expect(self.page.locator("#project-list .project-row")).to_have_count(12)
+        expect(self.page.locator("#project-list .project-row")).to_have_count(13)
         boxes = self.page.locator(".project-title").evaluate_all(
             "els => els.map(el => ({left: el.getBoundingClientRect().left, "
             "right: el.getBoundingClientRect().right}))"
