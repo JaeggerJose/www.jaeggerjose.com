@@ -147,8 +147,6 @@ body.menu-is-open, body.project-is-open { overflow: hidden; }
 .hero-eyebrow { display: flex; align-items: center; gap: .65rem; font: .65rem/1.7 var(--font-meta); color: var(--moss-text); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 1.8rem; }
 .hero-name { font-size: clamp(3.7rem, 7.5vw, 7.6rem); line-height: 1.06; letter-spacing: -.07em; margin-left: -.06em; }
 .name-period { color: var(--akache); }
-.hero-byline { margin-top: 1.4rem; font-size: .8rem; color: var(--muted-text); }
-.hero-byline > span { margin-inline: .8rem; color: var(--akache); }
 .hero-intro { font: 400 clamp(1.15rem, 1.7vw, 1.5rem)/1.6 var(--font-serif); letter-spacing: -.025em; margin-top: 2.1rem; }
 .hero-description { margin-top: 1rem; max-width: 420px; font-size: .83rem; color: var(--muted-text); line-height: 1.95; }
 .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 1.7rem; margin-top: 2rem; }
@@ -354,7 +352,6 @@ footer { padding: 1.6rem var(--pad-x); display: flex; align-items: center; justi
   .hero-layout { grid-template-columns: 1fr; gap: 2.5rem; }
   .hero-name { font-size: clamp(3.55rem, 14vw, 5.4rem); line-height: 1.07; }
   .hero-eyebrow { font-size: .59rem; margin-bottom: 1.5rem; }
-  .hero-byline { font-size: .75rem; margin-top: 1.2rem; }
   .hero-intro { font-size: 1.18rem; margin-top: 1.75rem; }
   .hero-description { font-size: .83rem; max-width: 430px; }
   .hero-actions { gap: 1.2rem; margin-top: 1.5rem; }

@@ -1,5 +1,5 @@
 # Design Spec — jaeggerjose.com
-> 廖洺玄 · Ming-Hsuan Liao Personal Portfolio
+> Mike · Personal Portfolio
 > 最後更新：2026-10-04
 
 ---
