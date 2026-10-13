@@ -62,12 +62,12 @@ class PortfolioTests(unittest.TestCase):
 
     def test_homepage_project_opens_matching_detail(self):
         self.visit("/")
-        self.page.get_by_role("link", name="View Tokyo Train Board", exact=True).click()
-        expect(self.page).to_have_url(re.compile(r"/works\.html#trainboard$"))
-        dialog = self.page.get_by_role("dialog", name="Tokyo Train Board", exact=True)
+        self.page.get_by_role("link", name="View Tokyo Subway Challenge", exact=True).click()
+        expect(self.page).to_have_url(re.compile(r"/works\.html#subway$"))
+        dialog = self.page.get_by_role("dialog", name="Tokyo Subway Challenge", exact=True)
         expect(dialog).to_be_visible()
-        expect(dialog.get_by_role("link", name="View on GitHub")).to_have_attribute(
-            "href", "https://github.com/jaeggerjose/tokyo-train-board"
+        expect(dialog.get_by_role("link", name="Visit site")).to_have_attribute(
+            "href", "https://tokyo-subway.jaeggerjose.com"
         )
 
     def test_live_project_links_to_its_site(self):

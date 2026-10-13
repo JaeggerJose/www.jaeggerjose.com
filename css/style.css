@@ -178,20 +178,8 @@ body.menu-is-open, body.project-is-open { overflow: hidden; }
 .project-cover:hover .project-preview { transform: scale(1.025); }
 .cover-arrow { position: absolute; right: .85rem; bottom: .85rem; width: 30px; height: 30px; display: grid; place-items: center; background: #f5f2e9; color: #293d31; font-size: 1rem; transition: background .2s, color .2s; }
 .project-cover:hover .cover-arrow { background: #a44c36; color: #f5f2e9; }
-.preview-train { background: #263e35; }
-.train-board { width: 80%; max-width: 304px; padding: 1rem 1.05rem .8rem; border: 1px solid #6c80624f; background: #182c25; color: #e4e6cf; box-shadow: 7px 8px 0 #12271f66; transform: rotate(-3deg); font-family: var(--font-meta); }
-.train-heading { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #8d9e7f55; padding-bottom: .7rem; }
-.train-heading > span:first-child { font: 1.25rem/1 var(--font-serif); }
-.train-heading small { font: .55rem/1 var(--font-meta); margin-left: .45rem; color: #b4c4aa; }
-.train-symbol { font: italic 700 1.2rem/1 Georgia, serif; color: #a6c3a0; }
-.train-header { display: grid; grid-template-columns: 1fr 1.5fr; font-size: .4rem; letter-spacing: .11em; color: #a6b59e; padding-block: .75rem .4rem; }
-.train-row { display: grid; grid-template-columns: 1fr 1.5fr; align-items: center; gap: .25rem; padding-block: .45rem; border-top: 1px solid #74856e26; font-size: .63rem; letter-spacing: .06em; }
-.train-row > span:first-child { color: #e6c68a; font-size: .91rem; }
-.train-row i { display: inline-block; width: 3px; height: 9px; margin-right: .35rem; }
-.line-green { background: #92b890; }
-.line-orange { background: #d29964; }
-.train-bottom { display: flex; justify-content: space-between; align-items: center; color: #a9bb9e; font-size: .51rem; padding-top: .65rem; }
-.train-bottom > span { font-size: .4rem; }
+.preview-subway { background: #e9e6da; }
+.preview-subway img { width: 100%; height: 100%; object-fit: cover; }
 .preview-cluster { background-color: #e4e6d8; background-image: linear-gradient(#5269490b 1px, transparent 1px), linear-gradient(90deg, #5269490b 1px, transparent 1px); background-size: 24px 24px; color: #344f3b; }
 .preview-note { position: absolute; left: 1.3rem; top: 1.2rem; font: .47rem/1.6 var(--font-meta); letter-spacing: .17em; }
 .cluster-network { position: relative; width: 76%; display: flex; align-items: center; justify-content: space-between; margin-top: .5rem; }

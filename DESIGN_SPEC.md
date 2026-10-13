@@ -121,7 +121,7 @@
 
 插畫：`assets/yukiguni-print.svg`（640×660），包含雪山、松林、小屋、赤茶太陽、印刷顆粒及點陣。HTML 提供日文題字、印章與圖說。
 
-代表作：Tokyo Train Board、CGU Kubeflow LDAP Admin（首頁短標題 CGU AI Platform Admin）、DICOM → FHIR Converter。圖像為 CSS 示意插畫。
+代表作：Tokyo Subway Challenge、CGU Kubeflow LDAP Admin（首頁短標題 CGU AI Platform Admin）、DICOM → FHIR Converter。圖像為 SVG 與 CSS 示意插畫。
 
 ### 5.2 journal.html（已移除，2026-10-02）
 
