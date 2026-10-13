@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="400" viewBox="0 0 560 400">
+  <defs>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#385747" stroke-opacity=".07"/>
+    </pattern>
+  </defs>
+  <rect width="560" height="400" fill="#e9e6da"/>
+  <rect width="560" height="400" fill="url(#grid)"/>
+  <g font-family="monospace" fill="#385747">
+    <text x="30" y="35" font-size="10" letter-spacing="2">TOKYO / STATION MEMORY</text>
+    <text x="30" y="71" font-family="serif" font-size="25">東京の地下鉄、何駅言える？</text>
+  </g>
+  <g fill="none" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-20 280H115L213 182H346L420 108H580" stroke="#ca9650"/>
+    <path d="M76 90V163L213 300H346L449 197H580" stroke="#bd6574"/>
+    <path d="M126 420V333L277 182V110" stroke="#6f9584"/>
+    <path d="M-20 142H115L213 240H395L480 325H580" stroke="#7896ae"/>
+  </g>
+  <g fill="#f7f4e9" stroke="#385747" stroke-width="2.5">
+    <circle cx="76" cy="142" r="7"/>
+    <circle cx="159" cy="226" r="7"/>
+    <circle cx="213" cy="182" r="7"/>
+    <circle cx="277" cy="182" r="9"/>
+    <circle cx="219" cy="240" r="9"/>
+    <circle cx="346" cy="300" r="7"/>
+    <circle cx="406" cy="240" r="7"/>
+    <circle cx="420" cy="108" r="7"/>
+    <circle cx="126" cy="333" r="7"/>
+  </g>
+  <g fill="#385747" font-family="monospace" font-size="11">
+    <text x="89" y="132">SHINJUKU</text>
+    <text x="230" y="165">IKEBUKURO</text>
+    <text x="236" y="265">???</text>
+  </g>
+  <g transform="translate(28 302)">
+    <rect x="4" y="5" width="181" height="68" rx="3" fill="#385747" opacity=".12"/>
+    <rect width="181" height="68" rx="3" fill="#f7f4e9" stroke="#b7bca8"/>
+    <circle cx="22" cy="23" r="9" fill="#385747"/>
+    <path d="m18 23 3 3 5-6" fill="none" stroke="#f7f4e9" stroke-width="1.5"/>
+    <text x="39" y="27" font-family="monospace" font-size="12" fill="#385747">SHIBUYA</text>
+    <text x="15" y="51" font-family="monospace" font-size="9" letter-spacing="1" fill="#6a7968">ANOTHER STATION FOUND.</text>
+  </g>
+  <g transform="translate(347 313)" fill="#385747" font-family="monospace">
+    <text font-size="27">42<tspan font-size="13" fill="#687968"> / 216</tspan></text>
+    <text y="20" font-size="9" letter-spacing="1.5">STATIONS RECALLED</text>
+    <rect y="32" width="133" height="4" rx="2" opacity=".15"/>
+    <rect y="32" width="26" height="4" rx="2"/>
+  </g>
+</svg>
