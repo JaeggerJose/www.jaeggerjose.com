@@ -63,11 +63,20 @@ test('/api/og validates input and blocks private hosts', async () => {
   const missing = await get('/api/og');
   assert.equal(missing.status, 400);
   assert.deepEqual(await missing.json(), { ok: false, error: 'missing_url' });
-  for (const target of ['https://localhost/', 'https://10.6.0.5/', 'https://127.0.0.1:8080/']) {
+  for (const target of [
+    'https://localhost/', 'https://10.6.0.5/', 'https://127.0.0.1:8080/',
+    'https://100.100.100.100/', 'https://198.18.0.1/', 'https://224.0.0.1/', 'https://[64:ff9b::a06:5]/',
+  ]) {
     const res = await get(`/api/og?url=${encodeURIComponent(target)}`);
     assert.equal(res.status, 400);
     assert.equal((await res.json()).error, 'blocked_host');
   }
   const http = await get(`/api/og?url=${encodeURIComponent('http://example.com/')}`);
   assert.equal((await http.json()).error, 'blocked_protocol');
+});
+
+test('/api/og hides internal error details', async () => {
+  const res = await get(`/api/og?url=${encodeURIComponent('https://nonexistent.invalid/')}`);
+  assert.equal(res.status, 400);
+  assert.match((await res.json()).error, /^[a-z_0-9]+$/);
 });
