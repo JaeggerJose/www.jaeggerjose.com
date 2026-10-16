@@ -2,7 +2,7 @@
 // Run with: node --test tests/*.test.mjs
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { createServer } from 'node:http';
+import { createServer, request } from 'node:http';
 import { createHandler } from '../scripts/serve.mjs';
 
 let server;
@@ -38,6 +38,23 @@ test('redirects retired journal URLs permanently', async () => {
   const res = await get('/journal');
   assert.equal(res.status, 308);
   assert.equal(res.headers.get('location'), '/');
+});
+
+// fetch() ignores a custom Host header, so host-based rules go through node:http.
+const getWithHost = (path, host) =>
+  new Promise((resolve, reject) => {
+    request(base + path, { headers: { host } }, (res) => {
+      res.resume();
+      resolve(res);
+    }).on('error', reject).end();
+  });
+
+test('redirects the apex domain to www, keeping path and query', async () => {
+  const res = await getWithHost('/works.html?x=1', 'jaeggerjose.com');
+  assert.equal(res.statusCode, 308);
+  assert.equal(res.headers.location, 'https://www.jaeggerjose.com/works.html?x=1');
+  const www = await getWithHost('/works.html', 'www.jaeggerjose.com');
+  assert.equal(www.statusCode, 200);
 });
 
 test('rewrites garden routes', async () => {

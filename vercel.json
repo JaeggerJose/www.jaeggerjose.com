@@ -34,7 +34,9 @@
       ]
     }
   ],
+  "git": { "deploymentEnabled": false },
   "redirects": [
+    { "source": "/(.*)", "has": [{ "type": "host", "value": "jaeggerjose.com" }], "destination": "https://www.jaeggerjose.com/$1", "permanent": true },
     { "source": "/journal.html", "destination": "/", "permanent": true },
     { "source": "/journal", "destination": "/", "permanent": true }
   ],

@@ -40,6 +40,20 @@ function loadRules(vercel) {
   };
 }
 
+// Supports the "host" condition of Vercel's `has` field, the only one vercel.json uses.
+const hostMatches = (rule, host) =>
+  (rule.has ?? []).every((cond) => cond.type === 'host' && cond.value === host);
+
+function findRedirect(rules, pathname, host) {
+  for (const rule of rules.redirects) {
+    const match = rule.pattern.exec(pathname);
+    if (match && hostMatches(rule, host)) {
+      return { ...rule, location: rule.destination.replace(/\$(\d)/g, (_, i) => match[Number(i)] ?? '') };
+    }
+  }
+  return null;
+}
+
 const headersFor = (rules, pathname) =>
   rules.headers
     .filter((rule) => rule.pattern.test(pathname))
@@ -80,9 +94,10 @@ export async function createHandler() {
         res.writeHead(405, { ...headers, Allow: 'GET, HEAD' }).end();
         return;
       }
-      const redirect = rules.redirects.find((r) => r.pattern.test(pathname));
+      const host = (req.headers.host ?? '').replace(/:\d+$/, '');
+      const redirect = findRedirect(rules, pathname, host);
       if (redirect) {
-        res.writeHead(redirect.permanent ? 308 : 307, { ...headers, Location: redirect.destination }).end();
+        res.writeHead(redirect.permanent ? 308 : 307, { ...headers, Location: redirect.location + url.search }).end();
         return;
       }
       if (pathname === '/api/og') {
