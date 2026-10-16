@@ -10,13 +10,19 @@ const PRIVATE_CIDRS = [
   /^10\./, /^127\./, /^169\.254\./,
   /^172\.(1[6-9]|2\d|3[01])\./,
   /^192\.168\./, /^192\.0\.0\./, /^0\./,
+  /^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./, // 100.64.0.0/10 CGNAT / Tailscale
+  /^198\.1[89]\./,                              // 198.18.0.0/15 benchmarking
+  /^(22[4-9]|2[3-5]\d)\./,                      // multicast, reserved, broadcast
 ];
+// Error codes safe to show to clients; anything else is reported as fetch_failed.
+const PUBLIC_ERRORS = /^(blocked_\w+|too_many_redirects|redirect_no_location|timeout|fetch_failed_\d{3})$/;
 
 function isPrivateIp(addr) {
   if (!addr) return true;
   if (PRIVATE_CIDRS.some(re => re.test(addr))) return true;
   if (addr === '::1' || addr === '::') return true;
   if (/^fe80:/i.test(addr) || /^fc[0-9a-f]{2}:/i.test(addr) || /^fd[0-9a-f]{2}:/i.test(addr)) return true;
+  if (/^64:ff9b:/i.test(addr) || /^ff[0-9a-f]{2}:/i.test(addr)) return true; // NAT64, multicast
   if (/^::ffff:/i.test(addr)) {
     const v4 = addr.replace(/^::ffff:/i, '');
     return PRIVATE_CIDRS.some(re => re.test(v4));
@@ -153,6 +159,7 @@ module.exports = async function handler(req, res) {
     res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate=604800');
     return res.json({ ok: true, ...meta });
   } catch (err) {
-    return res.status(400).json({ ok: false, error: String(err.message || err) });
+    const code = String((err && err.message) || err);
+    return res.status(400).json({ ok: false, error: PUBLIC_ERRORS.test(code) ? code : 'fetch_failed' });
   }
 };
