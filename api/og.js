@@ -35,48 +35,63 @@ async function isPrivateHost(hostname) {
   }
 }
 
+// Re-checks the address at connect time so a DNS answer that changes after isPrivateHost()
+// (DNS rebinding) cannot reach the server's private network.
+function safeLookup(hostname, options, callback) {
+  require('dns').lookup(hostname, { ...options, all: true }, (err, addrs) => {
+    if (err) return callback(err);
+    if (!addrs.length || addrs.some(a => isPrivateIp(a.address))) return callback(new Error('blocked_host'));
+    if (options.all) return callback(null, addrs);
+    return callback(null, addrs[0].address, addrs[0].family);
+  });
+}
+
+function getOnce(url) {
+  return new Promise((resolve, reject) => {
+    const req = require('https').get(url, {
+      lookup: safeLookup,
+      headers: { 'User-Agent': UA, 'Accept': 'text/html,application/xhtml+xml' },
+    }, resolve);
+    req.on('error', reject);
+    setTimeout(() => req.destroy(new Error('timeout')), FETCH_TIMEOUT_MS).unref();
+  });
+}
+
+async function readLimited(res) {
+  const chunks = [];
+  let received = 0;
+  for await (const chunk of res) {
+    received += chunk.length;
+    if (received > MAX_BYTES) { res.destroy(); break; }
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks).toString('utf-8');
+}
+
 async function fetchWithLimits(url, redirectsLeft = MAX_REDIRECTS) {
   const u = new URL(url);
   if (u.protocol !== 'https:') throw new Error('blocked_protocol');
   if (await isPrivateHost(u.hostname)) throw new Error('blocked_host');
 
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+  const res = await getOnce(url);
+  const status = res.statusCode;
 
-  let res;
-  try {
-    res = await fetch(url, {
-      signal: ctrl.signal,
-      redirect: 'manual',
-      headers: { 'User-Agent': UA, 'Accept': 'text/html,application/xhtml+xml' },
-    });
-  } finally {
-    clearTimeout(timer);
-  }
-
-  if (res.status >= 300 && res.status < 400) {
+  if (status >= 300 && status < 400) {
+    res.resume();
     if (redirectsLeft <= 0) throw new Error('too_many_redirects');
-    const loc = res.headers.get('location');
+    const loc = res.headers.location;
     if (!loc) throw new Error('redirect_no_location');
     const next = new URL(loc, url);
     next.username = '';
     next.password = '';
     return fetchWithLimits(next.toString(), redirectsLeft - 1);
   }
-  if (!res.ok) throw new Error('fetch_failed_' + res.status);
-
-  const reader = res.body.getReader();
-  const chunks = [];
-  let received = 0;
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    received += value.length;
-    if (received > MAX_BYTES) { try { reader.cancel(); } catch {} break; }
-    chunks.push(value);
+  if (status < 200 || status >= 300) {
+    res.resume();
+    throw new Error('fetch_failed_' + status);
   }
-  const buf = Buffer.concat(chunks.map(c => Buffer.from(c)));
-  return { url, html: buf.toString('utf-8') };
+
+  return { url, html: await readLimited(res) };
 }
 
 function decodeHtml(s) {

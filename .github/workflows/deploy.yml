@@ -1,0 +1,26 @@
+name: Deploy site on mike
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: www-site-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux, x64, www-site]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add local Node to PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Test
+        run: node --test tests/*.test.mjs
+      - name: Deploy
+        run: bash scripts/deploy-local.sh
