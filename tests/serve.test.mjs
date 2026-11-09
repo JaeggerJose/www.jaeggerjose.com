@@ -71,6 +71,20 @@ test('rejects path traversal and unknown files', async () => {
   assert.equal((await get('/does-not-exist.html')).status, 404);
 });
 
+// A 404 under /css or /js used to inherit the 1-year immutable rule, so Cloudflare kept
+// serving it after the files came back.
+test('marks error responses as uncacheable, even on long-cache paths', async () => {
+  for (const path of ['/css/missing.css', '/js/missing.js', '/does-not-exist.html']) {
+    const res = await get(path);
+    assert.equal(res.status, 404);
+    assert.equal(res.headers.get('cache-control'), 'no-store');
+    assert.equal(res.headers.get('x-content-type-options'), 'nosniff');
+  }
+  const post = await get('/css/style.css', { method: 'POST' });
+  assert.equal(post.status, 405);
+  assert.equal(post.headers.get('cache-control'), 'no-store');
+});
+
 test('rejects methods other than GET and HEAD', async () => {
   assert.equal((await get('/', { method: 'POST' })).status, 405);
   assert.equal((await get('/', { method: 'HEAD' })).status, 200);

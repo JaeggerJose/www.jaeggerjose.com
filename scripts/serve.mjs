@@ -24,6 +24,8 @@ const TYPES = {
   '.xml': 'application/xml; charset=utf-8',
 };
 const DEFAULT_CACHE = 'public, max-age=0, must-revalidate';
+// Errors must not inherit a long-cache rule, or the CDN keeps serving a 404 after the file is back.
+const ERROR_CACHE = 'no-store';
 
 // Vercel source patterns: "(.*)" is a regex group, ":name" matches one path segment.
 const toPattern = (source) =>
@@ -91,7 +93,7 @@ export async function createHandler() {
     const headers = headersFor(rules, pathname);
     try {
       if (req.method !== 'GET' && req.method !== 'HEAD') {
-        res.writeHead(405, { ...headers, Allow: 'GET, HEAD' }).end();
+        res.writeHead(405, { ...headers, 'Cache-Control': ERROR_CACHE, Allow: 'GET, HEAD' }).end();
         return;
       }
       const host = (req.headers.host ?? '').replace(/:\d+$/, '');
@@ -107,7 +109,7 @@ export async function createHandler() {
       const rewrite = rules.rewrites.find((r) => r.pattern.test(pathname));
       const file = await resolveFile(rewrite ? rewrite.destination : pathname);
       if (!file) {
-        res.writeHead(404, { ...headers, 'Content-Type': 'text/plain' }).end('not found');
+        res.writeHead(404, { ...headers, 'Cache-Control': ERROR_CACHE, 'Content-Type': 'text/plain' }).end('not found');
         return;
       }
       const body = await readFile(file);
