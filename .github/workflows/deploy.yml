@@ -17,7 +17,7 @@ jobs:
     runs-on: [self-hosted, linux, x64, www-site]
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Add local Node to PATH
         run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Test
