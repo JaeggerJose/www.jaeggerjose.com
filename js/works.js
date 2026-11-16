@@ -143,7 +143,7 @@ const PROJECTS = [
     title: 'Tokyo Subway Challenge',
     sub: 'Web Game · Interactive Map',
     year: '2026',
-    desc: '「東京の地下鉄、何駅言える？」——不看路線圖，挑戰說出東京 Metro＋都營地下鐵全 216 站的網頁遊戲。提供記憶模式與四選一測驗，可用漢字、平假名、羅馬字或中文作答，並以互動地圖顯示各路線達成度，支援日／中／英三語。',
+    desc: '「東京の地下鉄、何駅言える？」——不看路線圖，挑戰說出車站名稱的網頁遊戲。從東京地下鐵起步，現已擴充到 22 個版本，涵蓋日本各大都市地下鐵、JR、私鐵與新幹線。提供記憶模式、四選一測驗與每日 5 題，可用漢字、平假名、羅馬字或中文作答，並以互動地圖顯示各路線達成度，支援日／中／英三語。截至 2026 年 11 月，每月超過 10 萬次造訪、累計 2.4 萬次完賽紀錄。',
     tech: ['JavaScript', 'Interactive Map', 'i18n', 'Supabase'],
     url: 'https://tokyo-subway.jaeggerjose.com',
     pinColor: '#e86f9a',
